@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dashboard</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <link href="/css/style.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+  <h2>Welcome, <%= username %>!</h2>
+  <p>Your role: <%= role %></p>
+   <% if (role == 'admin') { %>
+	<p><a href="/register">Create New Users</a></p>
+   <% } %>
+  <table>
+  <tr>
+        <th>Server Type</th>
+        <th>Status</th>
+        <th>Uptime</th>
+        <th>World->Login Connected</th>
+        <th>Commands</th>
+        <th>PID</th>
+  </tr>
+  <tr>
+  <td>Login Server</td>
+  <td><%= login_status %></td>
+  <td>
+  <% if (login_uptime !== '') { %>
+	<%= login_uptime %>
+  <% } %>
+  </td>
+  <td>N/A</td>
+  <td>
+  <% if (role == 'admin') { %>
+	<form action="/view_login_log">
+		<input type="submit" value="View Login Server Log" />
+	</form>
+  <% } %>
+  <% if (login_pid == "-1" && role == 'admin' && (login_status === 'Unknown' || login_status === 'offline')) { %>
+	<form action="/start_login">
+		<input type="submit" value="Start Login Server" />
+	</form>
+  <% }
+	 else if (login_pid != "-1" && role == 'admin') { %>
+	<form action="/stop_login">
+		<input type="submit" value="Stop Login Server" />
+	</form>
+	<% } %>
+  </td>
+  <td><%= login_pid %></td>
+  </tr>
+  
+  
+  <tr>
+  <td>World Server</td>
+  <td><%= world_status %></td>
+  <td>
+  <% if (world_uptime !== '') { %>
+	<%= world_uptime %>
+  <% } %>
+  </td>
+  <% wl_status = "unavailable" %>
+  <% if (worldlogin_connected === 'connected') {
+	wl_status = "available"
+  } %>
+  <td class="<%= wl_status %>"><%= worldlogin_connected %></td>
+  <td>
+  <% if (role == 'admin') { %>
+	<form action="/view_world_log">
+		<input type="submit" value="View World Server Log" />
+	</form>
+  <% } %>
+  <% if (world_pid == "-1" && role == 'admin' && (world_status === 'Unknown' || world_status === 'offline')) { %>
+	<form action="/start_world">
+		<input type="submit" value="Start World Server" />
+	</form>
+  <% }
+	 else if (world_pid != "-1" && role == 'admin') { %>
+	<form action="/stop_world">
+		<input type="submit" value="Stop World Server" />
+	</form>
+	<% } %>
+  </td>
+  <td><%= world_pid %></td>
+  </tr>
+  </table>
+
+  <a href="/">Logout</a>
+</body>
+</html>

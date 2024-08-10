@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Clients Table</title>
+</head>
+<body>
+  <h1>Clients</h1>
+  <table border="1">
+    <tr>
+      <th>ID</th>
+      <th>Name</th>
+      <th>Client Version</th>
+    </tr>
+    <% if (clients["Clients"] != "") {
+		clients["Clients"].forEach(client => { %>
+      <tr>
+        <td><%= client.character_id %></td>
+        <td><%= client.character_name %></td>
+        <td><%= client.version %></td>
+      </tr>
+    <% }); } %>
+  </table>
+</body>
+</html>

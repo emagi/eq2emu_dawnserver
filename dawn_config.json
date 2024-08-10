@@ -1,0 +1,8 @@
+{
+  "mysql": {
+    "host": "mysql",
+    "user": "eq2_dawn",
+    "password": "password",
+    "database": "eq2dawn_web"
+  }
+}

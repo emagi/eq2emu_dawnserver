@@ -1,0 +1,1 @@
+screen -d -m bash -x /eq2emu/start_login.sh

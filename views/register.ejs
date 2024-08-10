@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Register</title>
+</head>
+<body>
+  <h2>Register</h2>
+  <form action="/register" method="post">
+    <label for="username">Username:</label><br>
+    <input type="text" id="username" name="username" required><br>
+    <label for="password">Password:</label><br>
+    <input type="password" id="password" name="password" required><br>
+    <label for="role">Role:</label><br>
+    <select id="role" name="role">
+      <option value="admin">Administrator</option>
+      <option value="moderator">Moderator</option>
+      <option value="user">Regular User</option>
+    </select><br><br>
+    <input type="submit" value="Register">
+  </form>
+  <a href="/">Back to Login</a>
+</body>
+</html>
