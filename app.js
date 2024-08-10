@@ -68,7 +68,7 @@ if (!fs.existsSync(configPath)) {
 const config = JSON.parse(fs.readFileSync(configPath));
 
 // Database connection
-const connection = mysql.createConnection({
+const db = mysql.createConnection({
   host: config.mysql.host,
   user: config.mysql.user,
   password: config.mysql.password,
