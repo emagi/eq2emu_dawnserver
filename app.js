@@ -5,6 +5,7 @@ const session = require('express-session');
 const mysql = require('mysql2');
 const crypto = require('crypto');
 const fs = require('fs');
+const path = require('path');
 const fetchStatus = require('./polling'); // Import the polling function
 const { exec } = require('child_process');
 
