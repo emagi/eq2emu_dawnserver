@@ -22,7 +22,11 @@
   </tr>
   <tr>
   <td>Login Server</td>
-  <td><%= login_status %></td>
+  <% ls_status = "unavailable" %>
+  <% if (login_status === 'online') {
+	wl_status = "available"
+  } %>
+  <td class="<%= ls_status %>"><%= login_status %></td>
   <td>
   <% if (login_uptime !== '') { %>
 	<%= login_uptime %>
@@ -52,7 +56,11 @@
   
   <tr>
   <td>World Server</td>
-  <td><%= world_status %></td>
+  <% ws_status = "unavailable" %>
+  <% if (world_status === 'online') {
+	ws_status = "available"
+  } %>
+  <td class="<%= ws_status %>"><%= world_status %></td>
   <td>
   <% if (world_uptime !== '') { %>
 	<%= world_uptime %>
