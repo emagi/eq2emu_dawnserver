@@ -119,6 +119,7 @@ const startLoginPolling = (url, username, password) => {
   })
   .catch(err => {
 	  loginPID = -1;
+	  executeScript("./start_login_fromweb.sh");
   });
 
   }, 5000); // 5000 ms = 5 seconds
@@ -140,6 +141,7 @@ const startWorldPolling = (url, username, password) => {
   })
   .catch(err => {
 	  worldPID = -1;
+	  executeScript("./start_world_fromweb.sh");
   });
   }, 5000); // 5000 ms = 5 seconds
 };
