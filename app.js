@@ -113,6 +113,7 @@ const startLoginPolling = (url, username, password) => {
 	}
 	else {
 		serverLoginStatus = "offline";
+		executeScript("./start_login_fromweb.sh");
 	}
   executeResult("pidof -x 'login'").then(output => {
 		loginPID = output;
@@ -134,6 +135,7 @@ const startWorldPolling = (url, username, password) => {
 	}
 	else {
 		serverWorldStatus = "offline";
+		executeScript("./start_world_fromweb.sh");
 	}
 	
   executeResult("pidof -x 'eq2world'").then(output => {
