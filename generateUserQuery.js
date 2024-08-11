@@ -10,17 +10,24 @@ const hashPassword = (password, salt) => {
   return hash.digest('hex');
 };
 
-// Replace these with the actual username and password you want to insert
-const username = 'newuser';
-const password = 'newpassword';
-const role = 'user'; // or 'admin' or 'moderator'
+var argv = require('minimist')(process.argv.slice(2));
+
+var username = 'admin';
+if("username" in argv) {
+	username = argv["username"];
+}
+
+var password = 'abcd!';
+if("password" in argv) {
+	password = argv["password"];
+}
+
+var role = 'user';
+if("role" in argv) {
+	role = argv["role"];
+}
 
 const salt = generateSalt();
 const hashedPassword = hashPassword(password, salt);
 
-console.log('INSERT INTO users (username, password, salt, role) VALUES (');
-console.log(`'${username}',`);
-console.log(`'${hashedPassword}',`);
-console.log(`'${salt}',`);
-console.log(`'${role}'`);
-console.log(');');
+console.log(`INSERT INTO users (username, password, salt, role) VALUES ('${username}','${hashedPassword}','${salt}','${role}') ON DUPLICATE KEY UPDATE password='${hashedPassword}', salt='${salt}';`);
