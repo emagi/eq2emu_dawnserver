@@ -1,6 +1,7 @@
 {
   "http": {
-    "port": "2424"
+    "port": "2424",
+	"auto_restart": "1"
   },
   "mysql": {
     "host": "mysql",

@@ -5,6 +5,7 @@ const session = require('express-session');
 const mysql = require('mysql2');
 const crypto = require('crypto');
 const fs = require('fs');
+const fsp = require('fs').promises;
 const path = require('path');
 const fetchStatus = require('./polling'); // Import the polling function
 const { exec } = require('child_process');
@@ -14,10 +15,13 @@ const app = express();
 // Define the path to the config file
 const configPath = path.join(__dirname, 'dawn_config.json');
 
-// Check if the config file exists
-if (!fs.existsSync(configPath)) {
-  console.error('Error: Configuration file "dawn_config.json" not found.');
-  process.exit(1); // Exit the application
+async function checkFileNotExist(filePath) {
+    try {
+        await fsp.access(filePath);
+        return 0;
+    } catch (err) {
+        return 1;
+    }
 }
 
 // Load the configuration file
@@ -114,14 +118,18 @@ const startLoginPolling = (url, username, password) => {
 	}
 	else {
 		serverLoginStatus = "offline";
-		executeScript("./start_login_fromweb.sh");
+		if(config.http.auto_restart === "1" && checkFileNotExist("/eq2emu/server_loading")) {
+			executeScript("./start_login_fromweb.sh");
+		}
 	}
   executeResult("pidof -x 'login'").then(output => {
 		loginPID = output;
   })
   .catch(err => {
 	  loginPID = -1;
-	  executeScript("./start_login_fromweb.sh");
+	  if(config.http.auto_restart === "1" && checkFileNotExist("/eq2emu/server_loading")) {
+		executeScript("./start_login_fromweb.sh");
+	  }
   });
 
   }, 5000); // 5000 ms = 5 seconds
@@ -136,7 +144,9 @@ const startWorldPolling = (url, username, password) => {
 	}
 	else {
 		serverWorldStatus = "offline";
-		executeScript("./start_world_fromweb.sh");
+		if(config.http.auto_restart === "1" && checkFileNotExist("/eq2emu/server_loading")) {
+			executeScript("./start_world_fromweb.sh");
+		}
 	}
 	
   executeResult("pidof -x 'eq2world'").then(output => {
@@ -144,7 +154,9 @@ const startWorldPolling = (url, username, password) => {
   })
   .catch(err => {
 	  worldPID = -1;
-	  executeScript("./start_world_fromweb.sh");
+	  if(config.http.auto_restart === "1" && checkFileNotExist("/eq2emu/server_loading")) {
+		executeScript("./start_world_fromweb.sh");
+	  }
   });
   }, 5000); // 5000 ms = 5 seconds
 };
@@ -266,8 +278,13 @@ app.get('/dashboard', (req, res) => {
 });
 
 app.get('/start_world', checkRole('admin'), (req, res) => {
-  executeScript("./start_world_fromweb.sh");
-  res.send('Sent request to start world server');
+	if(checkFileNotExist("/eq2emu/server_loading")) {
+	  executeScript("./start_world_fromweb.sh");
+	  res.send('Sent request to start world server');
+	}
+	else {
+	  res.send('Server is loading and cannot handle the request at this time.');
+	}
 });
 
 app.get('/stop_world', checkRole('admin'), (req, res) => {
@@ -286,8 +303,13 @@ app.get('/view_world_log', checkRole('admin'), (req, res) => {
 });
 
 app.get('/start_login', checkRole('admin'), (req, res) => {
-  executeScript("./start_login_fromweb.sh");
-  res.send('Sent request to start login server');
+	if(checkFileNotExist("/eq2emu/server_loading")) {
+	  executeScript("./start_login_fromweb.sh");
+	  res.send('Sent request to start login server');
+	}
+	else {
+	  res.send('Server is loading and cannot handle the request at this time.');
+	}
 });
 
 app.get('/stop_login', checkRole('admin'), (req, res) => {
