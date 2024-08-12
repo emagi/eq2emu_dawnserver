@@ -10,7 +10,20 @@ const fetchStatus = require('./polling'); // Import the polling function
 const { exec } = require('child_process');
 
 const app = express();
-const port = 2424;
+
+// Define the path to the config file
+const configPath = path.join(__dirname, 'dawn_config.json');
+
+// Check if the config file exists
+if (!fs.existsSync(configPath)) {
+  console.error('Error: Configuration file "dawn_config.json" not found.');
+  process.exit(1); // Exit the application
+}
+
+// Load the configuration file
+const config = JSON.parse(fs.readFileSync(configPath));
+
+const port = config.http.port;
 
 let serverLoginStatus = 'Unknown';
 let serverWorldStatus = 'Unknown';
@@ -54,18 +67,6 @@ function executeResult(scriptName) {
     });
   });
 }
-
-// Define the path to the config file
-const configPath = path.join(__dirname, 'dawn_config.json');
-
-// Check if the config file exists
-if (!fs.existsSync(configPath)) {
-  console.error('Error: Configuration file "dawn_config.json" not found.');
-  process.exit(1); // Exit the application
-}
-
-// Load the configuration file
-const config = JSON.parse(fs.readFileSync(configPath));
 
 // Database connection
 const db = mysql.createConnection({
