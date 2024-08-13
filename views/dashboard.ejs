@@ -10,13 +10,13 @@
   <% server_status = "unavailable" %>
   <% if (server_loaded == 1 && login_status === 'online' && world_status === 'online' && worldlogin_connected === 'connected') {
 	server_status = "available"
-  } else {
+  } else { %>
     <script>
         setInterval(() => {
             window.location.reload();
         }, 5000); // 5000 milliseconds = 5 seconds
     </script>
-}  %>
+<% }  %>
   
   <% ls_status = "unavailable" %>
   <% if (login_status === 'online') {
