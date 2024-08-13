@@ -8,10 +8,10 @@
 <body>
   <h2>Welcome, <%= username %>!</h2>
   <% server_status = "unavailable" %>
-  <% if (server_loaded === '1') {
+  <% if (server_loaded == 1) {
 	server_status = "available"
   } %>
-  <h3 class="<%= server_status %>"> <% if(server_loaded === '0') { %> Server is loading, please wait! <% } else { %> Server is loaded! <% } %>
+  <h3 class="<%= server_status %>"> <% if(server_loaded == 0) { %> Server is loading, please wait! <% } else { %> Server is loaded! <% } %>
   <p>Your role: <%= role %></p>
    <% if (role == 'admin') { %>
 	<p><a href="/register">Create New Users</a></p>
