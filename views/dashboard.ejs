@@ -9,6 +9,9 @@
 
   <h2>Welcome, <%= username %>!</h2>
   <p>Your role: <%= role %></p>
+   <% if (server_loaded == "0") { %>
+   <h3>Server is loading.. please wait!</h3>
+   <% }
    <% if (role == 'admin') { %>
 	<p><a href="/register">Create New Users</a></p>
    <% } %>
