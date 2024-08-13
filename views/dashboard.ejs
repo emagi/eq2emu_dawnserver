@@ -11,7 +11,19 @@
   <% if (server_loaded == 1) {
 	server_status = "available"
   } %>
-  <h3 class="<%= server_status %>"> <% if(server_loaded == 0) { %> Server is loading, please wait! <% } else { %> Server is loaded! <% } %></h3>
+  
+  <% ls_status = "unavailable" %>
+  <% if (login_status === 'online') {
+	ls_status = "available"
+  } %>
+  <% ws_status = "unavailable" %>
+  <% if (world_status === 'online') {
+	ws_status = "available"
+  } %>
+  <h3 class="<%= server_status %>"> <% if(server_loaded == 0) { %> Server is starting up, please wait! <%
+  } else if(ls_status === 'unavailable' || ws_status === 'unavailable') { %>
+  Database and configuration loaded, login and/or world not yet online
+  <% } else { %> Server Running! <% } %></h3>
   <p>Your role: <%= role %></p>
    <% if (role == 'admin') { %>
 	<p><a href="/register">Create New Users</a></p>
@@ -27,10 +39,6 @@
   </tr>
   <tr>
   <td>Login Server</td>
-  <% ls_status = "unavailable" %>
-  <% if (login_status === 'online') {
-	ls_status = "available"
-  } %>
   <td class="<%= ls_status %>"><%= login_status %></td>
   <td>
   <% if (login_uptime !== '') { %>
@@ -61,10 +69,6 @@
   
   <tr>
   <td>World Server</td>
-  <% ws_status = "unavailable" %>
-  <% if (world_status === 'online') {
-	ws_status = "available"
-  } %>
   <td class="<%= ws_status %>"><%= world_status %></td>
   <td>
   <% if (world_uptime !== '') { %>
