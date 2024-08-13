@@ -40,6 +40,7 @@ let worldClients = {};
 
 let loginPID = -1;
 let worldPID = -1;
+let ServerLoaded = 0;
 
 function executeScript(scriptName) {
   exec(scriptName, (error, stdout, stderr) => {
@@ -118,7 +119,7 @@ const startLoginPolling = (url, username, password) => {
 	}
 	else {
 		serverLoginStatus = "offline";
-		if(config.http.auto_restart === "1" && checkFileNotExist("/eq2emu/server_loading")) {
+		if(config.http.auto_restart === "1" && ServerLoaded == 1) {
 			executeScript("./start_login_fromweb.sh");
 		}
 	}
@@ -127,7 +128,7 @@ const startLoginPolling = (url, username, password) => {
   })
   .catch(err => {
 	  loginPID = -1;
-	  if(config.http.auto_restart === "1" && checkFileNotExist("/eq2emu/server_loading")) {
+	  if(config.http.auto_restart === "1" && ServerLoaded == 1) {
 		executeScript("./start_login_fromweb.sh");
 	  }
   });
@@ -144,7 +145,7 @@ const startWorldPolling = (url, username, password) => {
 	}
 	else {
 		serverWorldStatus = "offline";
-		if(config.http.auto_restart === "1" && checkFileNotExist("/eq2emu/server_loading")) {
+		if(config.http.auto_restart === "1" && ServerLoaded == 1) {
 			executeScript("./start_world_fromweb.sh");
 		}
 	}
@@ -154,11 +155,17 @@ const startWorldPolling = (url, username, password) => {
   })
   .catch(err => {
 	  worldPID = -1;
-	  if(config.http.auto_restart === "1" && checkFileNotExist("/eq2emu/server_loading")) {
+	  if(config.http.auto_restart === "1" && ServerLoaded == 1) {
 		executeScript("./start_world_fromweb.sh");
 	  }
   });
   }, 5000); // 5000 ms = 5 seconds
+};
+
+const serverLoadedPolling = () => {
+  setInterval(async () => {
+   ServerLoaded = checkFileNotExist("/eq2emu/server_loading");
+  }, 1000); // 1000 ms = 1 seconds
 };
 
 const startWorldClientPolling = (url, username, password) => {
@@ -250,7 +257,6 @@ app.get('/dashboard', (req, res) => {
 	var loginUptime = "";
 	var worldUptime = "";
 	var wl_connected = "disconnected";
-	var server_is_loaded = await checkFileNotExist("/eq2emu/server_loading");
 	if(loginStatus.hasOwnProperty("login_uptime_string")) {
 		loginUptime = loginStatus.login_uptime_string;
 	}
@@ -271,7 +277,7 @@ app.get('/dashboard', (req, res) => {
 	  worldlogin_connected: wl_connected,
 	  login_pid: loginPID,
 	  world_pid: worldPID,
-	  server_loaded: server_is_loaded
+	  server_loaded: ServerLoaded
     });
   } else {
     res.send('Please login to view this page!');
@@ -280,7 +286,7 @@ app.get('/dashboard', (req, res) => {
 });
 
 app.get('/start_world', checkRole('admin'), (req, res) => {
-	if(checkFileNotExist("/eq2emu/server_loading")) {
+	if(ServerLoaded == 1) {
 	  executeScript("./start_world_fromweb.sh");
 	  res.send('Sent request to start world server');
 	}
@@ -305,7 +311,7 @@ app.get('/view_world_log', checkRole('admin'), (req, res) => {
 });
 
 app.get('/start_login', checkRole('admin'), (req, res) => {
-	if(checkFileNotExist("/eq2emu/server_loading")) {
+	if(ServerLoaded == 1) {
 	  executeScript("./start_login_fromweb.sh");
 	  res.send('Sent request to start login server');
 	}
@@ -340,6 +346,8 @@ const login_password = config.polling.login_password; // Replace with actual pas
 const remoteWorldServerUrl = "https://127.0.0.1:9002";
 const world_username = config.polling.world_admin; // Replace with actual username
 const world_password = config.polling.world_password; // Replace with actual password
+
+serverLoadedPolling();
 
 // Start polling if URL is provided
 if (remoteLoginServerUrl) {
