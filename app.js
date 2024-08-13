@@ -257,6 +257,7 @@ app.get('/dashboard', (req, res) => {
 	var loginUptime = "";
 	var worldUptime = "";
 	var wl_connected = "disconnected";
+	var is_server_loading = checkFileExist("/eq2emu/server_loading");
 	if(loginStatus.hasOwnProperty("login_uptime_string")) {
 		loginUptime = loginStatus.login_uptime_string;
 	}
@@ -277,7 +278,7 @@ app.get('/dashboard', (req, res) => {
 	  worldlogin_connected: wl_connected,
 	  login_pid: loginPID,
 	  world_pid: worldPID,
-	  server_startup: checkFileExist("/eq2emu/server_loading")
+	  server_startup: is_server_loading
     });
   } else {
     res.send('Please login to view this page!');
