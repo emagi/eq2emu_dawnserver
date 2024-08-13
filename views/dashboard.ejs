@@ -8,7 +8,7 @@
 <body>
   <h2>Welcome, <%= username %>!</h2>
   <% server_status = "unavailable" %>
-  <% if (server_loaded == 1) {
+  <% if (server_loaded == 1 && login_status === 'online' && world_status === 'online' && worldlogin_connected === 'connected') {
 	server_status = "available"
   } %>
   
@@ -23,6 +23,7 @@
   <h3 class="<%= server_status %>"> <% if(server_loaded == 0) { %> Server is starting up, please wait! <%
   } else if(ls_status === 'unavailable' || ws_status === 'unavailable') { %>
   Database and configuration loaded, login and/or world not yet online
+  <% } else if(worldlogin_connected !== 'connected') { %> World is not connected to login server!
   <% } else { %> Server Running! <% } %></h3>
   <p>Your role: <%= role %></p>
    <% if (role == 'admin') { %>
