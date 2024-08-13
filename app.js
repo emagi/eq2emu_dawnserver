@@ -332,12 +332,12 @@ app.get('/world_clients', checkRole('admin'), (req, res) => {
 });
 
 const remoteLoginServerUrl = "https://127.0.0.1:9101/status";
-const login_username = 'webadmin'; // Replace with actual username
-const login_password = 'webpass!'; // Replace with actual password
+const login_username = config.polling.login_admin; // Replace with actual username
+const login_password = config.polling.login_password; // Replace with actual password
 
 const remoteWorldServerUrl = "https://127.0.0.1:9002";
-const world_username = 'webadmin'; // Replace with actual username
-const world_password = 'webpass!'; // Replace with actual password
+const world_username = config.polling.world_admin; // Replace with actual username
+const world_password = config.polling.world_password; // Replace with actual password
 
 // Start polling if URL is provided
 if (remoteLoginServerUrl) {

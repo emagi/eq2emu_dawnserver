@@ -9,4 +9,10 @@
     "password": "password",
     "database": "eq2dawn_web"
   }
+  "polling": {
+    "login_admin": "webadmin",
+	"login_password": "webpass!",
+    "world_admin": "webadmin",
+	"world_password": "webpass!"
+  }
 }
