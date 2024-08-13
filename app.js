@@ -284,6 +284,40 @@ app.get('/dashboard', (req, res) => {
   res.end();
 });
 
+app.get('/dashboard_update', (req, res) => {
+  if (req.session.loggedin) {
+	var loginUptime = "";
+	var worldUptime = "";
+	var wl_connected = "disconnected";
+	if(loginStatus.hasOwnProperty("login_uptime_string")) {
+		loginUptime = loginStatus.login_uptime_string;
+	}
+	if(worldStatus.hasOwnProperty("world_uptime_string")) {
+		worldUptime = worldStatus.world_uptime_string;
+	}
+	if(worldStatus.hasOwnProperty("login_connected")) {
+		wl_connected = worldStatus.login_connected;
+	}
+	res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify({
+      username: req.session.username,
+      role: req.session.role,
+      uptime: process.uptime(),
+      login_status: serverLoginStatus, // Use the polled server status
+      world_status: serverWorldStatus, // Use the polled server status,
+      login_uptime: loginUptime, // Use the polled server status
+      world_uptime: worldUptime, // Use the polled server status
+	  worldlogin_connected: wl_connected,
+	  login_pid: loginPID,
+	  world_pid: worldPID,
+	  server_loaded: ServerLoaded
+    }));
+  } else {
+    res.send('Please login to view this page!');
+	res.end();
+  }
+});
+
 app.get('/start_world', checkRole('admin'), (req, res) => {
 	if(ServerLoaded == 1) {
 	  executeScript("./start_world_fromweb.sh");

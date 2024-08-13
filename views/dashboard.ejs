@@ -26,11 +26,7 @@
   <% if (world_status === 'online') {
 	ws_status = "available"
   } %>
-  <h3 class="<%= server_status %>"> <% if(server_loaded == 0) { %> Server is starting up, please wait! <%
-  } else if(ls_status === 'unavailable' || ws_status === 'unavailable') { %>
-  Database and configuration loaded, login and/or world not yet online
-  <% } else if(worldlogin_connected !== 'connected') { %> World is not connected to login server!
-  <% } else { %> Server Running! <% } %></h3>
+  <h3 id="serverStatusHeader" class="<%= server_status %>"></h3>
   <p>Your role: <%= role %></p>
    <% if (role == 'admin') { %>
 	<p><a href="/register">Create New Users</a></p>
@@ -46,8 +42,8 @@
   </tr>
   <tr>
   <td>Login Server</td>
-  <td class="<%= ls_status %>"><%= login_status %></td>
-  <td>
+  <td id="statusLogin" class="<%= ls_status %>"><%= login_status %></td>
+  <td id="statusLoginUptime">
   <% if (login_uptime !== '') { %>
 	<%= login_uptime %>
   <% } %>
@@ -70,14 +66,14 @@
 	</form>
 	<% } %>
   </td>
-  <td><%= login_pid %></td>
+  <td id="statusLoginPID"><%= login_pid %></td>
   </tr>
   
   
   <tr>
   <td>World Server</td>
-  <td class="<%= ws_status %>"><%= world_status %></td>
-  <td>
+  <td id="statusWorld" class="<%= ws_status %>"><%= world_status %></td>
+  <td id="statusWorldUptime">
   <% if (world_uptime !== '') { %>
 	<%= world_uptime %>
   <% } %>
@@ -86,7 +82,7 @@
   <% if (worldlogin_connected === 'connected') {
 	wl_status = "available"
   } %>
-  <td class="<%= wl_status %>"><%= worldlogin_connected %></td>
+  <td id="statusWorldLoginConnected" class="<%= wl_status %>"><%= worldlogin_connected %></td>
   <td>
   <% if (role == 'admin') { %>
 	<form action="/view_world_log">
@@ -107,10 +103,48 @@
 	</form>
 	<% } %>
   </td>
-  <td><%= world_pid %></td>
+  <td id="statusWorldPID"><%= world_pid %></td>
   </tr>
   </table>
 
   <a href="/">Logout</a>
+  
+  
+    <script>
+        // Function to fetch updates from the server
+        async function fetchUpdates() {
+            try {
+                const response = await fetch('/dashboard_update');
+                const data = await response.json();
+                
+                // Update the DOM with the fetched data
+				var message = "Unknown Status";
+				if(data.server_loaded == 0) {
+						message = "Server is starting up, please wait!";
+				   } else if(data.ls_status === 'unavailable' || data.ws_status === 'unavailable') {
+						message = "Database and configuration loaded, login and/or world not yet online";
+				} else if(data.worldlogin_connected !== 'connected') {
+						message = "World is not connected to login server!";
+				} else {
+						message = "Server Running!";
+				}
+                document.getElementById('serverStatusHeader').innerText = message;
+				document.getElementById('statusWorldPID').innerText = data.world_pid;
+				document.getElementById('statusWorld').innerText = data.world_status;
+				document.getElementById('statusWorldUptime').innerText = data.world_uptime;
+				document.getElementById('statusWorldLoginConnected').innerText = data.worldlogin_connected;
+				
+				document.getElementById('statusLoginPID').innerText = data.login_pid;
+				document.getElementById('statusLogin').innerText = data.login_status;
+				document.getElementById('statusLoginUptime').innerText = data.login_uptime;
+            } catch (error) {
+                console.error('Error fetching updates:', error);
+            }
+        }
+		
+		fetchUpdates();
+        // Polling function to fetch updates every 5 seconds
+        setInterval(fetchUpdates, 5000);
+    </script>
 </body>
 </html>
