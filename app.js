@@ -23,14 +23,6 @@ function checkFileNotExist(filePath) {
 	}
 }
 
-function checkFileExist(filePath) {
-	if (fs.existsSync(filePath)) {
-		return 1;
-	} else {
-		return 0;
-	}
-}
-
 // Load the configuration file
 const config = JSON.parse(fs.readFileSync(configPath));
 
@@ -257,7 +249,6 @@ app.get('/dashboard', (req, res) => {
 	var loginUptime = "";
 	var worldUptime = "";
 	var wl_connected = "disconnected";
-	var is_server_loading = checkFileExist("/eq2emu/server_loading");
 	if(loginStatus.hasOwnProperty("login_uptime_string")) {
 		loginUptime = loginStatus.login_uptime_string;
 	}
@@ -277,8 +268,7 @@ app.get('/dashboard', (req, res) => {
       world_uptime: worldUptime, // Use the polled server status
 	  worldlogin_connected: wl_connected,
 	  login_pid: loginPID,
-	  world_pid: worldPID,
-	  server_startup: is_server_loading
+	  world_pid: worldPID
     });
   } else {
     res.send('Please login to view this page!');
