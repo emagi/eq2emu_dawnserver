@@ -6,7 +6,7 @@
   <link href="/css/style.css" rel="stylesheet" type="text/css">
 </head>
 <body>
-  <h2>Welcome, <%= username %>!</h2>
+  <h2>Welcome, <%= username %> <%= server_loaded %>!</h2>
   <p>Your role: <%= role %></p>
    <% if (role == 'admin') { %>
 	<p><a href="/register">Create New Users</a></p>
