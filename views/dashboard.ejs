@@ -7,9 +7,6 @@
 </head>
 <body>
 
-  <% if (server_startup == 1) { %>
-	<%= <b>Server is currently starting up, please wait!</b> %>
-  <% } %>
   <h2>Welcome, <%= username %>!</h2>
   <p>Your role: <%= role %></p>
    <% if (role == 'admin') { %>
