@@ -15,13 +15,12 @@ const app = express();
 // Define the path to the config file
 const configPath = path.join(__dirname, 'dawn_config.json');
 
-async function checkFileNotExist(filePath) {
-    try {
-        await fsp.access(filePath);
-        return 0;
-    } catch (err) {
-        return 1;
-    }
+function checkFileNotExist(filePath) {
+	if (fs.existsSync(filePath)) {
+		return 0;
+	} else {
+		return 1;
+	}
 }
 
 // Load the configuration file
