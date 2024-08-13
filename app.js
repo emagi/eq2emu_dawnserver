@@ -249,7 +249,7 @@ app.get('/dashboard', (req, res) => {
 	var loginUptime = "";
 	var worldUptime = "";
 	var wl_connected = "disconnected";
-	var server_is_loaded = checkFileNotExist("/eq2emu/server_loading");
+	var server_is_loaded = await checkFileNotExist("/eq2emu/server_loading");
 	if(loginStatus.hasOwnProperty("login_uptime_string")) {
 		loginUptime = loginStatus.login_uptime_string;
 	}
