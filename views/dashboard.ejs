@@ -6,6 +6,17 @@
   <link href="/css/style.css" rel="stylesheet" type="text/css">
 </head>
 <body>
+<script>
+        function MakeCall(uri) {
+            fetch(uri)
+                .then(response => {
+				// no need
+                })
+                .catch(error => {
+                    console.error('Error making call:', error);
+                });
+        }
+</script>
   <h2>Welcome, <%= username %>!</h2>
   <% server_status = "unavailable" %>
   <% if (server_loaded == 1 && login_status === 'online' && world_status === 'online' && worldlogin_connected === 'connected') {
@@ -49,12 +60,10 @@
 	</form>
   <% } %>
   <% if (login_pid == "-1" && role == 'admin' && (login_status === 'Unknown' || login_status === 'offline')) { %>
-	<form action="/start_login">
-		<input type="submit" value="Start Login Server" />
-	</form>
+	 <button onclick="MakeCall('/start_login')">Start Login Server</button>
   <% }
 	 else if (login_pid != "-1" && role == 'admin') { %>
-	 <button onclick="window.open('/stop_login', '_blank')">Stop Login Server</button>
+	 <button onclick="MakeCall('/stop_login')">Stop Login Server</button>
 	<% } %>
   </td>
   <td id="statusLoginPID"><%= login_pid %></td>
@@ -81,12 +90,10 @@
 	</form>
   <% } %>
   <% if (world_pid == "-1" && role == 'admin' && (world_status === 'Unknown' || world_status === 'offline')) { %>
-	<form action="/start_world">
-		<input type="submit" value="Start World Server" />
-	</form>
+	 <button onclick="MakeCall('/start_world')">Start World Server</button>
   <% }
 	 else if (world_pid != "-1" && role == 'admin') { %>
-	 <button onclick="window.open('/stop_world', '_blank')">Stop World Server</button>
+	 <button onclick="MakeCall('/stop_world')">Stop World Server</button>
 	<form action="/world_clients">
 		<input type="submit" value="List World Clients" />
 	</form>
