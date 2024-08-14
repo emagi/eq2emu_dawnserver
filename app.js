@@ -7,6 +7,7 @@ const crypto = require('crypto');
 const fs = require('fs');
 const fsp = require('fs').promises;
 const path = require('path');
+const https = require('https');
 const fetchStatus = require('./polling'); // Import the polling function
 const { exec } = require('child_process');
 
