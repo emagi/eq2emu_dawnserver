@@ -2,12 +2,15 @@ const axios = require('axios');
 const https = require('https');
 const fs = require('fs');
 
-const httpsAgent = new https.Agent({
-  cert: fs.readFileSync('/eq2emu/eq2emu/server/webcert.pem'),
-  rejectUnauthorized: false
-})
-
-const fetchStatus = async (url, username, password) => {
+var httpsAgent = null;
+var currentCert = "";
+const fetchStatus = async (url, sslFiles, username, password) => {
+	if(httpsAgent == null || currentCert != sslFiles.cert) {		
+		httpsAgent = new https.Agent({
+		  cert: fs.readFileSync(sslFiles.cert),
+		  rejectUnauthorized: false
+		})
+	}
   try {
     const response = await axios.get(url, {
       httpsAgent,

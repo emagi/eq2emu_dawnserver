@@ -111,7 +111,7 @@ app.set('view engine', 'ejs');
 // Polling function
 const startLoginPolling = (url, username, password) => {
   setInterval(async () => {
-    var response = await fetchStatus(url, username, password);
+    var response = await fetchStatus(url, sslFiles, username, password);
 	if(response != null) {
 		serverLoginStatus = response.login_status;
 		loginStatus = response;
@@ -137,7 +137,7 @@ const startLoginPolling = (url, username, password) => {
 
 const startWorldPolling = (url, username, password) => {
   setInterval(async () => {
-    var response = await fetchStatus(url, username, password);
+    var response = await fetchStatus(url, sslFiles, username, password);
 	if(response != null) {
 		serverWorldStatus = response.world_status;
 		worldStatus = response;
@@ -169,7 +169,7 @@ const serverLoadedPolling = () => {
 
 const startWorldClientPolling = (url, username, password) => {
   setInterval(async () => {
-    var response = await fetchStatus(url, username, password);
+    var response = await fetchStatus(url, sslFiles, username, password);
 	if(response != null) {
 		worldClients = response;
 	}
@@ -392,7 +392,18 @@ if (remoteWorldServerUrl) {
   startWorldPolling(remoteWorldServerUrl + "/status", world_username, world_password);
   startWorldClientPolling(remoteWorldServerUrl + "/clients", world_username, world_password);
 }
+
+const sslFiles = {
+    key: config.http.server_key,
+    cert: config.http.server_cert
+};
+
+const sslOptions = {
+    key: fs.readFileSync(config.http.server_key),
+    cert: fs.readFileSync(config.http.server_cert)
+};
 	
-app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
+// Create HTTPS server
+https.createServer(sslOptions, app).listen(port, () => {
+    console.log('EQ2EMu Dawn HTTPS Server is running on port ${port}');
 });
