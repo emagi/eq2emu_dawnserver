@@ -121,14 +121,35 @@
 				} else {
 						message = "Server Running!";
 				}
+				
+				  <% server_status = "unavailable"
+				  if (data.server_loaded == 1 && data.login_status === 'online' && data.world_status === 'online' && data.worldlogin_connected === 'connected') {
+					server_status = "available"
+				  }
+				  ls_status = "unavailable"
+				  if (data.login_status === 'online') {
+					ls_status = "available"
+				  }
+				  ws_status = "unavailable"
+				  if (data.world_status === 'online') {
+					ws_status = "available"
+				  }
+				  wl_status = "unavailable"
+				  if (data.worldlogin_connected === 'connected') {
+					wl_status = "available"
+				  } %>
                 document.getElementById('serverStatusHeader').innerText = message;
+                document.getElementById('serverStatusHeader').className = server_status;
 				document.getElementById('statusWorldPID').innerText = data.world_pid;
 				document.getElementById('statusWorld').innerText = data.world_status;
+				document.getElementById('statusWorld').className = ws_status;
 				document.getElementById('statusWorldUptime').innerText = data.world_uptime;
 				document.getElementById('statusWorldLoginConnected').innerText = data.worldlogin_connected;
+				document.getElementById('statusWorldLoginConnected').className = wl_status;
 				
 				document.getElementById('statusLoginPID').innerText = data.login_pid;
 				document.getElementById('statusLogin').innerText = data.login_status;
+				document.getElementById('statusLogin').className = ls_status;
 				document.getElementById('statusLoginUptime').innerText = data.login_uptime;
             } catch (error) {
                 console.error('Error fetching updates:', error);
