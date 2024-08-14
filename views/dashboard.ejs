@@ -122,22 +122,23 @@
 						message = "Server Running!";
 				}
 				
-				  <% server_status = "unavailable"
-				  if (data.server_loaded == 1 && data.login_status === 'online' && data.world_status === 'online' && data.worldlogin_connected === 'connected') {
+				server_status = "unavailable";
+				if (data.server_loaded == 1 && data.login_status === 'online' && data.world_status === 'online' && data.worldlogin_connected === 'connected') {
 					server_status = "available"
-				  }
-				  ls_status = "unavailable"
-				  if (data.login_status === 'online') {
+				}
+				ls_status = "unavailable"
+				if (data.login_status === 'online') {
 					ls_status = "available"
-				  }
-				  ws_status = "unavailable"
-				  if (data.world_status === 'online') {
+				}
+				ws_status = "unavailable"
+				if (data.world_status === 'online') {
 					ws_status = "available"
-				  }
-				  wl_status = "unavailable"
-				  if (data.worldlogin_connected === 'connected') {
+				}
+				wl_status = "unavailable"
+				if (data.worldlogin_connected === 'connected') {
 					wl_status = "available"
-				  } %>
+				}
+				
                 document.getElementById('serverStatusHeader').innerText = message;
                 document.getElementById('serverStatusHeader').className = server_status;
 				document.getElementById('statusWorldPID').innerText = data.world_pid;
