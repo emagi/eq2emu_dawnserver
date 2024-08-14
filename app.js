@@ -42,6 +42,28 @@ let loginPID = -1;
 let worldPID = -1;
 let ServerLoaded = 0;
 
+function throttle(func, limit) {
+  let inThrottle;
+
+  return function(...args) {
+    if (!inThrottle) {
+      func.apply(this, args);  // Passing the arguments
+      inThrottle = true;
+      setTimeout(() => inThrottle = false, limit);
+    }
+  };
+}
+
+const startLogin = () => {
+  executeScript("./start_login_fromweb.sh");
+};
+const startWorld = () => {
+  executeScript("./start_world_fromweb.sh");
+};
+
+const startLoginThrottled = throttle(startLogin, 10000);
+const startWorldThrottled = throttle(startWorld, 10000);
+
 function executeScript(scriptName) {
   exec(scriptName, (error, stdout, stderr) => {
     if (error) {
@@ -120,7 +142,7 @@ const startLoginPolling = (url, username, password) => {
 	else {
 		serverLoginStatus = "offline";
 		if(config.http.auto_restart === "1" && ServerLoaded == 1) {
-			executeScript("./start_login_fromweb.sh");
+			startLoginThrottled();
 		}
 	}
   executeResult("pidof -x 'login'").then(output => {
@@ -129,7 +151,7 @@ const startLoginPolling = (url, username, password) => {
   .catch(err => {
 	  loginPID = -1;
 	  if(config.http.auto_restart === "1" && ServerLoaded == 1) {
-		executeScript("./start_login_fromweb.sh");
+		startLoginThrottled();
 	  }
   });
 
@@ -146,7 +168,7 @@ const startWorldPolling = (url, username, password) => {
 	else {
 		serverWorldStatus = "offline";
 		if(config.http.auto_restart === "1" && ServerLoaded == 1) {
-			executeScript("./start_world_fromweb.sh");
+			startWorldThrottled();
 		}
 	}
 	
@@ -156,7 +178,7 @@ const startWorldPolling = (url, username, password) => {
   .catch(err => {
 	  worldPID = -1;
 	  if(config.http.auto_restart === "1" && ServerLoaded == 1) {
-		executeScript("./start_world_fromweb.sh");
+		startWorldThrottled();
 	  }
   });
   }, 5000); // 5000 ms = 5 seconds
@@ -321,7 +343,7 @@ app.get('/dashboard_update', (req, res) => {
 
 app.get('/start_world', checkRole('admin'), (req, res) => {
 	if(ServerLoaded == 1) {
-	  executeScript("./start_world_fromweb.sh");
+	  startWorldThrottled();
 	  res.send('Sent request to start world server');
 	}
 	else {
@@ -346,7 +368,7 @@ app.get('/view_world_log', checkRole('admin'), (req, res) => {
 
 app.get('/start_login', checkRole('admin'), (req, res) => {
 	if(ServerLoaded == 1) {
-	  executeScript("./start_login_fromweb.sh");
+	  startLoginThrottled();
 	  res.send('Sent request to start login server');
 	}
 	else {
