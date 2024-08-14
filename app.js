@@ -165,7 +165,7 @@ const startWorldPolling = (url, username, password) => {
 const serverLoadedPolling = () => {
   setInterval(async () => {
    ServerLoaded = checkFileNotExist("/eq2emu/server_loading");
-  }, 1000); // 1000 ms = 1 seconds
+  }, 5000); // 5000 ms = 5 seconds
 };
 
 const startWorldClientPolling = (url, username, password) => {
