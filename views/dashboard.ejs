@@ -54,9 +54,7 @@
 	</form>
   <% }
 	 else if (login_pid != "-1" && role == 'admin') { %>
-	<form action="/stop_login">
-		<input type="submit" value="Stop Login Server" />
-	</form>
+	 <button onclick="window.open('/stop_login', '_blank')">Stop Login Server</button>
 	<% } %>
   </td>
   <td id="statusLoginPID"><%= login_pid %></td>
@@ -88,9 +86,7 @@
 	</form>
   <% }
 	 else if (world_pid != "-1" && role == 'admin') { %>
-	<form action="/stop_world">
-		<input type="submit" value="Stop World Server" />
-	</form>
+	 <button onclick="window.open('/stop_world', '_blank')">Stop World Server</button>
 	<form action="/world_clients">
 		<input type="submit" value="List World Clients" />
 	</form>
