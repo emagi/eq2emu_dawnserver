@@ -1,8 +1,9 @@
 {
   "http": {
     "port": "2424",
-    "server_key": "/eq2emu/eq2emu/server/webkey.pem",
-    "server_cert": "/eq2emu/eq2emu/server/webcert.pem",
+    "server_key": "/eq2emu/cert/mysql.key",
+    "server_cert": "/eq2emu/cert/mysql.crt",
+    "server_ca": "/eq2emu/eq2emu/server/webca.pem",
     "auto_restart": "1"
   },
   "mysql": {

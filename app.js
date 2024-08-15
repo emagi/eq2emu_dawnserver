@@ -418,12 +418,14 @@ if (remoteWorldServerUrl) {
 
 const sslFiles = {
     key: config.http.server_key,
-    cert: config.http.server_cert
+    cert: config.http.server_cert,
+    ca: config.http.server_ca
 };
 
 const sslOptions = {
     key: fs.readFileSync(config.http.server_key),
-    cert: fs.readFileSync(config.http.server_cert)
+    cert: fs.readFileSync(config.http.server_cert),
+    ca: fs.readFileSync(config.http.server_ca)
 };
 	
 // Create HTTPS server
