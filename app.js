@@ -424,8 +424,7 @@ const sslFiles = {
 
 const sslOptions = {
     key: fs.readFileSync(config.http.server_key),
-    cert: fs.readFileSync(config.http.server_cert),
-    ca: fs.readFileSync(config.http.server_ca)
+    cert: fs.readFileSync(config.http.server_cert)
 };
 	
 // Create HTTPS server
