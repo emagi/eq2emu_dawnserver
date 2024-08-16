@@ -7,8 +7,7 @@ var currentCert = "";
 const fetchStatus = async (url, sslFiles, username, password) => {
 	if(httpsAgent == null || currentCert != sslFiles.cert) {		
 		httpsAgent = new https.Agent({
-		  cert: fs.readFileSync(sslFiles.cert),
-		  rejectUnauthorized: false
+		  cert: fs.readFileSync(sslFiles.cert)
 		})
 	}
   try {
