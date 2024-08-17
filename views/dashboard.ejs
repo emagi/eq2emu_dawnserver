@@ -6,6 +6,7 @@
   <link href="/css/style.css" rel="stylesheet" type="text/css">
 </head>
 <body>
+<div class="dashboard-container">
 <script>
         function MakeCall(uri) {
             fetch(uri)
@@ -57,14 +58,14 @@
   <td>
   <% if (role == 'admin') { %>
 	<form action="/view_login_log">
-		<input type="submit" value="View Login Server Log" />
-	</form>
+		<button class="button" type="submit">View Login Log</button>
+	</form><br/>
   <% } %>
   <% if (login_pid == "-1" && role == 'admin' && (login_status === 'Unknown' || login_status === 'offline')) { %>
-	 <button onclick="MakeCall('/start_login')">Start Login Server</button>
+	 <button class="button" onclick="MakeCall('/start_login')">Start Login Server</button><br/>
   <% }
 	 else if (login_pid != "-1" && role == 'admin') { %>
-	 <button onclick="MakeCall('/stop_login')">Stop Login Server</button>
+	 <button class="button" onclick="MakeCall('/stop_login')">Stop Login Server</button>
 	<% } %>
   </td>
   <td id="statusLoginPID"><%= login_pid %></td>
@@ -87,16 +88,17 @@
   <td>
   <% if (role == 'admin') { %>
 	<form action="/view_world_log">
-		<input type="submit" value="View World Server Log" />
-	</form>
+		<button class="button" type="submit">View World Server Log</button>
+	</form><br/>
   <% } %>
   <% if (world_pid == "-1" && role == 'admin' && (world_status === 'Unknown' || world_status === 'offline')) { %>
-	 <button onclick="MakeCall('/start_world')">Start World Server</button>
+	 <button class="button" onclick="MakeCall('/start_world')">Start World Server</button><br/>
   <% }
 	 else if (world_pid != "-1" && role == 'admin') { %>
-	 <button onclick="MakeCall('/stop_world')">Stop World Server</button>
+	 <button class="button" onclick="MakeCall('/stop_world')">Stop World Server</button>
+	<br/><br/>
 	<form action="/world_clients">
-		<input type="submit" value="List World Clients" />
+		<button class="button" type="submit">List World Clients</button>
 	</form>
 	<% } %>
   </td>
@@ -165,5 +167,6 @@
         // Polling function to fetch updates every 5 seconds
         setInterval(fetchUpdates, 5000);
     </script>
+</div>
 </body>
 </html>

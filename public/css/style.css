@@ -1,4 +1,94 @@
 <style type="text/css">
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body Styles */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #121212; /* Night mode backdrop */
+    color: #e0e0e0; /* Light grey text for contrast */
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Dashboard Container */
+.dashboard-container {
+    width: 90%;
+    max-width: 1200px;
+    background-color: #1e1e1e; /* Dark background for the dashboard */
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+}
+
+/* Header */
+.dashboard-header {
+    text-align: center;
+    font-size: 2em;
+    margin-bottom: 30px;
+    color: #bb86fc; /* Soft purple for header titles */
+}
+
+/* Dashboard Sections */
+.section {
+    margin-bottom: 20px;
+    padding: 20px;
+    background-color: #292929; /* Slightly lighter for section dividers */
+    border-radius: 8px;
+}
+
+/* Cards */
+.card {
+    background-color: #333333; /* Card background */
+    padding: 15px;
+    border-radius: 10px;
+    color: #ffffff; /* White text for cards */
+    margin-bottom: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Button */
+.button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #bb86fc; /* Accent color for buttons */
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.button:hover {
+    background-color: #a369f8;
+}
+
+/* Inputs */
+input, select, textarea {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    background-color: #444444;
+    color: #e0e0e0;
+    border: none;
+    border-radius: 5px;
+}
+
+/* Footer */
+.dashboard-footer {
+    text-align: center;
+    padding: 20px;
+    color: #808080; /* Subtle color for the footer text */
+}
+
 	table {
 		width: 100%;
 		border-collapse: collapse;
@@ -10,7 +100,7 @@
 		text-align: center;
 	}
 	th {
-		background-color: #f2f2f2;
+		background-color: #ffffff;
 	}
 	.available {
 		background-color: #c6efce;
