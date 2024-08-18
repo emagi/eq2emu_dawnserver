@@ -395,6 +395,11 @@ app.get('/world_clients', checkRole('admin'), (req, res) => {
   res.render('world_clients', { clients : worldClients });
 });
 
+app.get('/kill_server', checkRole('admin'), (req, res) => {
+  res.send('Sent request to kill/restart dawn server.');
+  process.exit(0);
+});
+
 const remoteLoginServerUrl = "https://127.0.0.1:9101/status";
 const login_username = config.polling.login_admin; // Replace with actual username
 const login_password = config.polling.login_password; // Replace with actual password
