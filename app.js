@@ -418,7 +418,7 @@ app.post('/setadminstatus', checkRole('admin'), (req, res) => {
   const { charname, status } = req.body;
   
   if(charname == null || charname.length < 1 || status == null || status.length < 1) {
-	  return res.status(500).send('Error, invalid set admin status call');
+	  return res.status(500).send('Error, invalid set admin status call, charname: ' + charname + ', status: ' + status);
   }
   var response = postStatus(remoteWorldServerUrl + "/setadminstatus", JSON.stringify({character_name : charname, new_status: status}), sslFiles, world_username, world_password);
   
