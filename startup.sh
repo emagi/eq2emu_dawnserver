@@ -3,6 +3,8 @@ git pull
 cp -rf ItemScripts Quests RegionScripts SpawnScripts Spells ZoneScripts /eq2emu/eq2emu/server/
 sudo chown eq2emu:eq2emu /eq2emu/certs/
 sudo chmod 644 /eq2emu/certs/*
+
+cd /eq2emu/eq2emu_dawnserver/
 sudo chmod +x compile_source_web.sh
 login_status=$(pidof -x "login")
 world_status=$(pidof -x "eq2world")
