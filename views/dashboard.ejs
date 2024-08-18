@@ -8,16 +8,20 @@
 <body>
 <div class="dashboard-container">
 <script>
-        function MakeCall(uri) {
-            fetch(uri)
-                .then(response => {
-				// no need
-                })
-                .catch(error => {
-                    console.error('Error making call:', error);
-                });
-				fetchUpdates(); // get an update asap
-        }
+	function MakeCall(uri) {
+		fetch(uri)
+			.then(response => {
+			// no need
+			})
+			.catch(error => {
+				console.error('Error making call:', error);
+			});
+			fetchUpdates(); // get an update asap
+	}
+	function open_popup(target) {
+    window.open(target, 'eq2emu_popup', 'width=400,height=400,resizeable,scrollbars');
+	}
+	
 </script>
   <h2>Welcome, <%= username %>!</h2>
   <% server_status = "unavailable" %>
@@ -57,15 +61,14 @@
   <td>N/A</td>
   <td>
   <% if (role == 'admin') { %>
-	<form action="/view_login_log">
-		<button class="button" type="submit">View Login Log</button>
-	</form><br/>
+		<button class="button" onclick="open_popup('/view_login_log')">View Login Log</button>
+		<br/><br/>
   <% } %>
   <% if (login_pid == "-1" && role == 'admin' && (login_status === 'Unknown' || login_status === 'offline')) { %>
-	 <button class="button" onclick="MakeCall('/start_login')">Start Login Server</button><br/>
+	 <button class="button" onclick="MakeCall('/start_login'); window.alert('Login Start Request Sent')">Start Login Server</button><br/>
   <% }
 	 else if (login_pid != "-1" && role == 'admin') { %>
-	 <button class="button" onclick="MakeCall('/stop_login')">Stop Login Server</button>
+	 <button class="button" onclick="MakeCall('/stop_login'); window.alert('Login Stop Request Sent')">Stop Login Server</button>
 	<% } %>
   </td>
   <td id="statusLoginPID"><%= login_pid %></td>
@@ -87,19 +90,16 @@
   <td id="statusWorldLoginConnected" class="<%= wl_status %>"><%= worldlogin_connected %></td>
   <td>
   <% if (role == 'admin') { %>
-	<form action="/view_world_log">
-		<button class="button" type="submit">View World Server Log</button>
-	</form><br/>
+		<button class="button" onclick="open_popup('/view_world_log')">View World Server Log</button>
+	<br/><br/>
   <% } %>
   <% if (world_pid == "-1" && role == 'admin' && (world_status === 'Unknown' || world_status === 'offline')) { %>
-	 <button class="button" onclick="MakeCall('/start_world')">Start World Server</button><br/>
+	 <button class="button" onclick="MakeCall('/start_world'); window.alert('World Start Request Sent')">Start World Server</button><br/>
   <% }
 	 else if (world_pid != "-1" && role == 'admin') { %>
-	 <button class="button" onclick="MakeCall('/stop_world')">Stop World Server</button>
+	 <button class="button" onclick="MakeCall('/stop_world'); window.alert('World Stop Request Sent')">Stop World Server</button>
 	<br/><br/>
-	<form action="/world_clients">
-		<button class="button" type="submit">List World Clients</button>
-	</form>
+		<button class="button" onclick="open_popup('/world_clients')">List World Clients</button>
 	<% } %>
   </td>
   <td id="statusWorldPID"><%= world_pid %></td>
