@@ -31,5 +31,39 @@
     <% }); } %>
   </table>
 </div>
+    <script>
+        // Function to handle form submission dynamically
+        function submitForm(event) {
+            event.preventDefault(); // Prevent default form submission
+            
+            // Get the form element that triggered the event
+            const form = event.target;
+            const formData = new FormData(form); // Create FormData from the specific form
+
+            // Send the form data using fetch
+            fetch('/setadminstatus', { // Replace with your server endpoint
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json()) // Assume JSON response
+            .then(data => {
+                // Handle server response, e.g., updating the page dynamically
+                form.querySelector('.responseMessage').innerHTML = "Form submitted successfully!";
+            })
+            .catch(error => {
+                console.error('Error submitting form:', error);
+            });
+        }
+
+        // Attach event listener to all forms on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get all forms on the page
+            const forms = document.querySelectorAll('form');
+            // Attach the submitForm function to each form's submit event
+            forms.forEach(form => {
+                form.addEventListener('submit', submitForm);
+            });
+        });
+    </script>
 </body>
 </html>
