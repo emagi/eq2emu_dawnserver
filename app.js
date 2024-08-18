@@ -421,12 +421,9 @@ app.post('/setadminstatus', checkRole('admin'), (req, res) => {
 	  return res.status(500).send('Error, invalid set admin status call');
   }
   var response = postStatus(remoteWorldServerUrl + "/setadminstatus", JSON.stringify({character_name : charname, status: new_status}), sslFiles, world_username, world_password);
-  if(response != null) {
-  res.end(response);
-  }
-  else {
+  
+  res.send('Admin status update request sent!');
   res.end();
-  }
 });
 
 const remoteLoginServerUrl = "https://127.0.0.1:9101/status";
