@@ -8,8 +8,13 @@ cd /eq2emu/eq2emu_dawnserver/
 sudo chmod +x compile_source_web.sh
 login_status=$(pidof -x "login")
 world_status=$(pidof -x "eq2world")
+
 if [ "$login_status" == '' && "$world_status" == '' ]; then
 	screen -d -m bash -x compile_source_web.sh
+	sleep 5
+elif [ -f "/eq2emu/eq2emu_dawnserver/recompile" ]
+	screen -d -m bash -x compile_source_web.sh 1
+	rm /eq2emu/eq2emu_dawnserver/recompile
 	sleep 5
 fi
 

@@ -403,6 +403,7 @@ app.get('/kill_server', checkRole('admin'), (req, res) => {
 app.get('/kill_and_compile', checkRole('admin'), (req, res) => {
   res.send('Sent request to kill/restart world, login and dawn server.');
   ServerLoaded = 0;
+  executeResult("touch recompile");
   executeResult("pkill -9 login");
   executeResult("pkill -9 eq2world");
   process.exit(0);
