@@ -415,9 +415,9 @@ app.get('/kill_and_compile', checkRole('admin'), (req, res) => {
 });
 
 app.post('/setadminstatus', checkRole('admin'), (req, res) => {
-  const { charname, new_status } = req.body;
+  const { charname, status } = req.body;
   
-  if(charname == null || charname.length < 1 || new_status == null || new_status.length < 1) {
+  if(charname == null || charname.length < 1 || status == null || status.length < 1) {
 	  return res.status(500).send('Error, invalid set admin status call');
   }
   var response = postStatus(remoteWorldServerUrl + "/setadminstatus", JSON.stringify({character_name : charname, new_status: status}), sslFiles, world_username, world_password);
