@@ -8,7 +8,8 @@ const fs = require('fs');
 const fsp = require('fs').promises;
 const path = require('path');
 const https = require('https');
-const fetchStatus = require('./polling'); // Import the polling function
+const fetchStatus = require('./polling').fetchStatus;
+const postStatus = require('./polling').postStatus;
 const { exec } = require('child_process');
 
 const app = express();
@@ -411,6 +412,21 @@ app.get('/kill_and_compile', checkRole('admin'), (req, res) => {
   executeResult("pkill -9 login");
   executeResult("pkill -9 eq2world");
   process.exit(0);
+});
+
+app.post('/setadminstatus', checkRole('admin'), (req, res) => {
+  const { charname, new_status } = req.body;
+  
+  if(character_name.length < 1 || status.length < 1) {
+	  return res.status(500).send('Error, invalid set admin status call');
+  }
+  var response = await postStatus(url, JSON.stringify({character_name : character_name, status: status}), sslFiles, username, password);
+  if(response != null) {
+  res.end(response);
+  }
+  else {
+  res.end();
+  }
 });
 
 const remoteLoginServerUrl = "https://127.0.0.1:9101/status";

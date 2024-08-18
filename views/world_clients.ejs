@@ -21,6 +21,12 @@
         <td><%= client.character_name %></td>
         <td><%= client.version %></td>
         <td><%= client.status %></td>
+		<td>  <form action="/setadminstatus" method="POST">
+    <label for="status">Change Status (Between -1 and 255):</label>
+    <input type="hidden" id="charname" name="charname" value="<%= client.character_name %>">
+    <input type="number" id="new_status" name="new_status" min="-1" max="255" required>
+    <button type="submit">Update</button>
+  </form></td>
       </tr>
     <% }); } %>
   </table>
