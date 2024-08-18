@@ -68,10 +68,10 @@
 		<br/><br/>
   <% } %>
   <% if (login_pid == "-1" && role == 'admin' && (login_status === 'Unknown' || login_status === 'offline')) { %>
-	 <button class="button" onclick="MakeCall('/start_login'); window.alert('Login Start Request Sent')">Start Login Server</button><br/>
+	 <button class="button" onclick="MakeCall('/start_login'); window.alert('Login Start Request Sent');">Start Login Server</button><br/>
   <% }
 	 else if (login_pid != "-1" && role == 'admin') { %>
-	 <button class="button" onclick="MakeCall('/stop_login'); window.alert('Login Stop Request Sent')">Stop Login Server</button>
+	 <button class="button" onclick="if(confirm('Are you sure you wish to force stop the login server?') == true) { MakeCall('/stop_login'); window.alert('Login Stop Request Sent'); }">Stop Login Server</button>
 	<% } %>
   </td>
   <td id="statusLoginPID"><%= login_pid %></td>
@@ -100,7 +100,7 @@
 	 <button class="button" onclick="MakeCall('/start_world'); window.alert('World Start Request Sent')">Start World Server</button><br/>
   <% }
 	 else if (world_pid != "-1" && role == 'admin') { %>
-	 <button class="button" onclick="MakeCall('/stop_world'); window.alert('World Stop Request Sent')">Stop World Server</button>
+	 <button class="button" onclick="if(confirm('Are you sure you wish to force stop the world server?') == true) { MakeCall('/stop_world'); window.alert('World Stop Request Sent'); }">Stop World Server</button>
 	<br/><br/>
 		<button class="button" onclick="open_popup('/world_clients')">List World Clients</button>
 	<% } %>
