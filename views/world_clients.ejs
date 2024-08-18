@@ -39,11 +39,14 @@
             
             // Get the form element that triggered the event
             const form = event.target;
-            const formData = new FormData(form); // Create FormData from the specific form
+            const formData = new URLSearchParams(new FormData(form)).toString();
 
             // Send the form data using fetch
             fetch('/setadminstatus', { // Replace with your server endpoint
                 method: 'POST',
+				headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded' // Ensure proper Content-Type
+                },
                 body: formData
             })
             .then(response => response.json()) // Assume JSON response
