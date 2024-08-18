@@ -12,6 +12,7 @@
       <th>ID</th>
       <th>Name</th>
       <th>Client Version</th>
+      <th>Admin Status</th>
     </tr>
     <% if (clients["Clients"] != "") {
 		clients["Clients"].forEach(client => { %>
@@ -19,6 +20,7 @@
         <td><%= client.character_id %></td>
         <td><%= client.character_name %></td>
         <td><%= client.version %></td>
+        <td><%= client.status %></td>
       </tr>
     <% }); } %>
   </table>
