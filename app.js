@@ -400,6 +400,14 @@ app.get('/kill_server', checkRole('admin'), (req, res) => {
   process.exit(0);
 });
 
+app.get('/kill_and_compile', checkRole('admin'), (req, res) => {
+  res.send('Sent request to kill/restart world, login and dawn server.');
+  ServerLoaded = 0;
+  executeResult("pkill -9 login");
+  executeResult("pkill -9 eq2world");
+  process.exit(0);
+});
+
 const remoteLoginServerUrl = "https://127.0.0.1:9101/status";
 const login_username = config.polling.login_admin; // Replace with actual username
 const login_password = config.polling.login_password; // Replace with actual password

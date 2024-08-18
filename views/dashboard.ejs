@@ -42,6 +42,7 @@
 	<table><tr>
 	<th><a href="/register">Create New Users</a></th>
 	<th><a href="#" onclick="if(confirm('Are you sure you wish to force restart the dawn web server?') == true) MakeCall('/kill_server');">Kill/Restart Dawn Web Server</a></th>
+	<th><a href="#" onclick="if(confirm('Are you sure you wish to restart all services?') == true) MakeCall('/kill_and_compile');">Kill/Compile Login, World, Web Server</a></th>
 	</tr></table><br/>
    <% } %>
   <table>
