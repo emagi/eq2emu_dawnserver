@@ -23,7 +23,7 @@
 		<td>  <form action="/setadminstatus" method="POST">
     <input type="hidden" size="0" id="charname" name="charname" value="<%= client.character_name %>">
     <input type="number" size="4" id="status" name="status" min="-2" max="255" value="<%= client.status %>" required>
-    <button type="submit">Update</button>
+    <button type="submit">Update</button><div name="responseMessage" id="responseMessage"></div>
   </form></td>
       </tr>
     <% }); } %>
@@ -46,10 +46,9 @@
                 },
                 body: formData
             })
-            .then(response => response.json()) // Assume JSON response
             .then(data => {
                 // Handle server response, e.g., updating the page dynamically
-                form.querySelector('.responseMessage').innerHTML = "Form submitted successfully!";
+                form.querySelector('.responseMessage').innerHTML = "<span>&#10003;</span>";
             })
             .catch(error => {
                 console.error('Error submitting form:', error);
