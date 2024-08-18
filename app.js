@@ -417,7 +417,7 @@ app.get('/kill_and_compile', checkRole('admin'), (req, res) => {
 app.post('/setadminstatus', checkRole('admin'), (req, res) => {
   const { charname, new_status } = req.body;
   
-  if(character_name.length < 1 || status.length < 1) {
+  if(charname.length < 1 || new_status.length < 1) {
 	  return res.status(500).send('Error, invalid set admin status call');
   }
   var response = postStatus(url, JSON.stringify({character_name : character_name, status: status}), sslFiles, username, password);
