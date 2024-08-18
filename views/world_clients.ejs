@@ -23,7 +23,7 @@
 		<td>  <form action="/setadminstatus" method="POST">
     <input type="hidden" size="0" id="charname" name="charname" value="<%= client.character_name %>">
     <input type="number" size="4" id="status" name="status" min="-2" max="255" value="<%= client.status %>" required>
-    <button type="submit">Update</button><div name="responseMessage" id="responseMessage"></div>
+    <button type="submit">Update</button><div class="responseMessage"></div>
   </form></td>
       </tr>
     <% }); } %>
