@@ -420,7 +420,7 @@ app.post('/setadminstatus', checkRole('admin'), (req, res) => {
   if(character_name.length < 1 || status.length < 1) {
 	  return res.status(500).send('Error, invalid set admin status call');
   }
-  var response = await postStatus(url, JSON.stringify({character_name : character_name, status: status}), sslFiles, username, password);
+  var response = postStatus(url, JSON.stringify({character_name : character_name, status: status}), sslFiles, username, password);
   if(response != null) {
   res.end(response);
   }
