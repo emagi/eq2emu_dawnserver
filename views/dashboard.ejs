@@ -64,16 +64,10 @@
   </td>
   <td>N/A</td>
   <td>
-  <% if (role == 'admin') { %>
-		<button class="button" onclick="open_popup('/view_login_log')">View Login Log</button>
-		<br/><br/>
-  <% } %>
-  <% if (login_pid == "-1" && role == 'admin' && (login_status === 'Unknown' || login_status === 'offline')) { %>
-	 <button class="button" onclick="MakeCall('/start_login'); window.alert('Login Start Request Sent');">Start Login Server</button><br/>
-  <% }
-	 else if (login_pid != "-1" && role == 'admin') { %>
-	 <button class="button" onclick="if(confirm('Are you sure you wish to force stop the login server?') == true) { MakeCall('/stop_login'); window.alert('Login Stop Request Sent'); }">Stop Login Server</button>
-	<% } %>
+	 <button id="view_login_log" class="button" onclick="open_popup('/view_login_log')">View Login Log</button>
+	 <br/><br/>
+	 <button id="start_login" class="button" onclick="MakeCall('/start_login'); window.alert('Login Start Request Sent');">Start Login Server</button><br/>
+	 <button id="stop_login" class="button" onclick="if(confirm('Are you sure you wish to force stop the login server?') == true) { MakeCall('/stop_login'); window.alert('Login Stop Request Sent'); }">Stop Login Server</button>
   </td>
   <td id="statusLoginPID"><%= login_pid %></td>
   </tr>
@@ -93,18 +87,12 @@
   } %>
   <td id="statusWorldLoginConnected" class="<%= wl_status %>"><%= worldlogin_connected %></td>
   <td>
-  <% if (role == 'admin') { %>
-		<button class="button" onclick="open_popup('/view_world_log')">View World Server Log</button>
+	<button id="view_world_log" class="button" onclick="open_popup('/view_world_log')">View World Server Log</button>
 	<br/><br/>
-  <% } %>
-  <% if (world_pid == "-1" && role == 'admin' && (world_status === 'Unknown' || world_status === 'offline')) { %>
-	 <button class="button" onclick="MakeCall('/start_world'); window.alert('World Start Request Sent')">Start World Server</button><br/>
-  <% }
-	 else if (world_pid != "-1" && role == 'admin') { %>
-	 <button class="button" onclick="if(confirm('Are you sure you wish to force stop the world server?') == true) { MakeCall('/stop_world'); window.alert('World Stop Request Sent'); }">Stop World Server</button>
+	<button id="start_world" class="button" onclick="MakeCall('/start_world'); window.alert('World Start Request Sent')">Start World Server</button><br/>
+	<button id="stop_world" class="button" onclick="if(confirm('Are you sure you wish to force stop the world server?') == true) { MakeCall('/stop_world'); window.alert('World Stop Request Sent'); }">Stop World Server</button>
 	<br/><br/>
-		<button class="button" onclick="open_popup('/world_clients')">List World Clients</button>
-	<% } %>
+	<button id="list_clients" class="button" onclick="open_popup('/world_clients')">List World Clients</button>
   </td>
   <td id="statusWorldPID"><%= world_pid %></td>
   </tr>
@@ -154,6 +142,39 @@
 					wl_status = "available"
 				}
 				
+				
+				if (data.role == 'admin') {
+						document.getElementById("view_login_log").style.display = "block";
+						document.getElementById("view_world_log").style.display = "block";
+					if(data.login_pid > 0) {
+						document.getElementById("start_login").style.display = "none";
+						document.getElementById("stop_login").style.display = "block";
+					}
+					else {
+						document.getElementById("start_login").style.display = "block";
+						document.getElementById("stop_login").style.display = "none";
+					}
+					
+					if(data.world_pid > 0) {
+						document.getElementById("start_world").style.display = "none";
+						document.getElementById("stop_world").style.display = "block";
+						document.getElementById("list_clients").style.display = "block";
+					}
+					else {
+						document.getElementById("start_world").style.display = "block";
+						document.getElementById("stop_world").style.display = "none";
+						document.getElementById("list_clients").style.display = "none";
+					}
+				}
+				else {
+						document.getElementById("start_login").style.display = "none";
+						document.getElementById("stop_login").style.display = "none";
+						document.getElementById("start_world").style.display = "none";
+						document.getElementById("stop_world").style.display = "none";
+						document.getElementById("list_clients").style.display = "none";
+						document.getElementById("view_login_log").style.display = "none";
+						document.getElementById("view_world_log").style.display = "none";
+				}
                 document.getElementById('serverStatusHeader').innerText = message;
                 document.getElementById('serverStatusHeader').className = server_status;
 				document.getElementById('statusWorldPID').innerText = data.world_pid;
