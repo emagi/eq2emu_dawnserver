@@ -41,6 +41,7 @@ let worldClients = {};
 let loginPID = -1;
 let worldPID = -1;
 let ServerLoaded = 0;
+let ServerRecompile = 0;
 
 function throttle(func, limit) {
   let inThrottle;
@@ -187,6 +188,7 @@ const startWorldPolling = (url, username, password) => {
 const serverLoadedPolling = () => {
   setInterval(async () => {
    ServerLoaded = checkFileNotExist("/eq2emu/server_loading");
+   ServerRecompile = checkFileNotExist("/eq2emu/eq2emu_dawnserver/recompile");
   }, 5000); // 5000 ms = 5 seconds
 };
 
@@ -299,7 +301,8 @@ app.get('/dashboard', (req, res) => {
 	  worldlogin_connected: wl_connected,
 	  login_pid: loginPID,
 	  world_pid: worldPID,
-	  server_loaded: ServerLoaded
+	  server_loaded: ServerLoaded,
+	  server_recompile: ServerRecompile
     });
   } else {
     res.send('Please login to view this page!');
@@ -333,7 +336,8 @@ app.get('/dashboard_update', (req, res) => {
 	  worldlogin_connected: wl_connected,
 	  login_pid: loginPID,
 	  world_pid: worldPID,
-	  server_loaded: ServerLoaded
+	  server_loaded: ServerLoaded,
+	  server_recompile: ServerRecompile
     }));
   } else {
     res.send('Please login to view this page!');

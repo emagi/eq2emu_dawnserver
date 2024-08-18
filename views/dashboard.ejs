@@ -123,7 +123,12 @@
                 // Update the DOM with the fetched data
 				var message = "Unknown Status";
 				if(data.server_loaded == 0) {
-						message = "Server is starting up, please wait!";
+						if(data.server_recompile == 1) {
+							message = "Server is recompiling login and world, please wait!";
+						}
+						else {
+							message = "Server is starting up, please wait!";
+						}
 				   } else if(data.ls_status === 'unavailable' || data.ws_status === 'unavailable') {
 						message = "Database and configuration loaded, login and/or world not yet online";
 				} else if(data.worldlogin_connected !== 'connected') {
