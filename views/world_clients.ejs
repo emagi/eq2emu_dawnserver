@@ -11,20 +11,34 @@
     <tr>
       <th>ID</th>
       <th>Name</th>
+      <th>Race</th>
+      <th>Class</th>
+      <th>Level</th>
+      <th>Tradeskill Class</th>
+      <th>Tradeskill Level</th>
+      <th>Current Zone</th>
       <th>Client Version</th>
       <th>Admin Status</th>
+      <th>Zoning | Linkdead | InZone</th>
     </tr>
     <% if (clients["Clients"] != "") {
 		clients["Clients"].forEach(client => { %>
       <tr>
         <td><%= client.character_id %></td>
         <td><%= client.character_name %></td>
+        <td><%= client.race %></td>
+        <td><%= client.class1 %></td>
+        <td><%= client.level %></td>
+        <td><%= client.tradeskill_class1 %></td>
+        <td><%= client.tradeskill_level %></td>
+        <td><%= client.zonename %></td>
         <td><%= client.version %></td>
 		<td>  <form action="/setadminstatus" method="POST">
     <input type="hidden" size="0" id="charname" name="charname" value="<%= client.character_name %>">
     <input type="number" size="4" id="status" name="status" min="-2" max="255" value="<%= client.status %>" required>
     <button type="submit">Update</button><div class="responseMessage"></div>
   </form></td>
+		<td><%= client.is_zoning %> | <%= client.is_linkdead %> | <%= client.in_zone %></td>
       </tr>
     <% }); } %>
   </table>
