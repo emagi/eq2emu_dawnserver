@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Dashboard</title>
+  <title>EQ2EMu Dawn Dashboard</title>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <link href="/css/style.css" rel="stylesheet" type="text/css">
 </head>
@@ -40,9 +40,9 @@
   <p>Your role: <%= role %></p>
    <% if (role == 'admin') { %>
 	<table><tr>
-	<th><a href="/register">Create New Users</a></th>
-	<th><a href="#" onclick="if(confirm('Are you sure you wish to force restart the dawn web server?') == true) MakeCall('/kill_server');">Kill/Restart Dawn Web Server</a></th>
-	<th><a href="#" onclick="if(confirm('Are you sure you wish to restart all services?') == true) MakeCall('/kill_and_compile');">Kill/Compile Login, World, Web Server</a></th>
+	<th><button id="register" class="button" onclick="open_popup('/register')">Create New User</button></th>
+	<th><a href="#" class="button" onclick="if(confirm('Are you sure you wish to force restart the dawn web server?') == true) MakeCall('/kill_server');">Kill/Restart Dawn Web Server</a></th>
+	<th><a href="#" class="button" onclick="if(confirm('Are you sure you wish to restart all services?') == true) MakeCall('/kill_and_compile');">Kill/Compile Login, World, Web Server</a></th>
 	</tr></table><br/>
    <% } %>
   <table>
