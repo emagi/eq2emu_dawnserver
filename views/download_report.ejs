@@ -7,18 +7,32 @@
     <link href="/css/style.css" rel="stylesheet" type="text/css">
 </head>
 <body>
-    <h1>Select EQ2EMu Diagnostics to Download (ZIP)</h1>
+    <h1>Select EQ2EMu Diagnostics to Download as ZIP</h1>
     
-    <form id="fileForm" action="/download_diag" method="GET">
+	<table>
+    <form id="fileForm" action="/download" method="GET" onsubmit="return encodeFilePaths()">
         <div id="fileList">
             <% allowedFiles.forEach(function(file) { %>
+			<tr><td>
                 <div>
-                    <input type="checkbox" name="files[]" value="<%= file.path %>" checked>
+                    <input type="checkbox" name="files[]" value="<%= encodeURIComponent(file.path) %>">
                     <label for="files[]"><%= file.name %></label>
                 </div>
+			</td></tr>
             <% }); %>
         </div>
         <button type="submit">Download EQ2EMu Diagnostics ZIP</button>
     </form>
+	</table>
+
+    <script>
+        function encodeFilePaths() {
+            const inputs = document.querySelectorAll('input[name="files[]"]:checked');
+            inputs.forEach(input => {
+                input.value = encodeURIComponent(input.value);
+            });
+            return true;
+        }
+    </script>
 </body>
 </html>
