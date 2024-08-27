@@ -449,7 +449,7 @@ app.get('/download_diag', checkRole('admin'), (req, res) => {
     const decodedFiles = selectedFiles.map(file => decodeURIComponent(file));
 	
     // Filter the selected files to ensure they are in the allowed list
-    const filesToZip = allowedFiles.filter(file => selectedFiles.includes(file.path));
+    const filesToZip = allowedFiles.filter(file => decodedFiles.includes(file.path));
 
     if (filesToZip.length === 0) {
         return res.status(400).send('Selected files are not allowed.');
