@@ -107,8 +107,9 @@
         async function fetchUpdates() {
             try {
                 const response = await fetch('/dashboard_update');
+				const data = {};
 				try {
-					const data = await response.json();
+					data = await response.json();
                 }catch(error) {
 					if(error instanceof SyntaxError) {
 						window.location.href = window.location.host + '/';
