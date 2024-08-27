@@ -307,7 +307,7 @@ app.get('/dashboard', (req, res) => {
 	  server_recompile: ServerRecompile
     });
   } else {
-    res.redirect(`/login`);
+    res.redirect(`/`);
   }
   res.end();
 });
@@ -342,7 +342,7 @@ app.get('/dashboard_update', (req, res) => {
 	  server_recompile: ServerRecompile
     }));
   } else {
-    res.redirect(`/login`);
+    res.redirect(`/`);
 	res.end();
   }
 });
