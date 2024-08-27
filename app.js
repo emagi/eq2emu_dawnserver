@@ -307,7 +307,7 @@ app.get('/dashboard', (req, res) => {
 	  server_recompile: ServerRecompile
     });
   } else {
-    res.send('Please login to view this page!');
+    res.redirect(`/login`);
   }
   res.end();
 });
@@ -342,7 +342,7 @@ app.get('/dashboard_update', (req, res) => {
 	  server_recompile: ServerRecompile
     }));
   } else {
-    res.send('Please login to view this page!');
+    res.redirect(`/login`);
 	res.end();
   }
 });
