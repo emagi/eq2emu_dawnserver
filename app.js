@@ -426,12 +426,12 @@ app.post('/setadminstatus', checkRole('admin'), (req, res) => {
 });
 
 const allowedFiles = [
-    { path: '/eq2emu/eq2emu_dawnserver/eq2dawn.log', name: 'eq2dawn.log' },
-    { path: '/eq2emu/eq2emu_dawnserver/eq2dawn_last.log', name: 'eq2dawn_last.log' },
-    { path: '/eq2emu/eq2emu/server/logs/eq2login.log', name: 'eq2login.log' },
-    { path: '/eq2emu/eq2emu/server/logs/eq2login_last.log', name: 'eq2login_last.log' },
-    { path: '/eq2emu/eq2emu/server/logs/eq2world.log', name: 'eq2world.log' },
-    { path: '/eq2emu/eq2emu/server/logs/eq2world_last.log', name: 'eq2world_last.log' }
+    { path: path.normalize('/eq2emu/eq2emu_dawnserver/eq2dawn.log'), name: 'eq2dawn.log' },
+    { path: path.normalize('/eq2emu/eq2emu_dawnserver/eq2dawn_last.log'), name: 'eq2dawn_last.log' },
+    { path: path.normalize('/eq2emu/eq2emu/server/logs/eq2login.log'), name: 'eq2login.log' },
+    { path: path.normalize('/eq2emu/eq2emu/server/logs/eq2login_last.log'), name: 'eq2login_last.log' },
+    { path: path.normalize('/eq2emu/eq2emu/server/logs/eq2world.log'), name: 'eq2world.log' },
+    { path: path.normalize('/eq2emu/eq2emu/server/logs/eq2world_last.log'), name: 'eq2world_last.log' }
 ];
 
 app.get('/download_report', checkRole('admin'), (req, res) => {
@@ -444,12 +444,11 @@ app.get('/download_diag', checkRole('admin'), (req, res) => {
     if (!selectedFiles || selectedFiles.length === 0) {
         return res.status(400).send('No files selected.');
     }
-
-    // Decode the file paths
-    const decodedFiles = selectedFiles.map(file => decodeURIComponent(file));
 	
-    // Filter the selected files to ensure they are in the allowed list
-    const filesToZip = allowedFiles.filter(file => decodedFiles.includes(file.path));
+    // Normalize the file paths for comparison
+    const filesToZip = allowedFiles.filter(file => 
+        selectedFiles.some(selectedFile => path.normalize(selectedFile) === path.normalize(file.path))
+    );
 
     if (filesToZip.length === 0) {
         return res.status(400).send('Selected files are not allowed.');
