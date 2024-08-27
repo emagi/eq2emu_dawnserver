@@ -209,7 +209,8 @@ function checkRole(role) {
     if (req.session.role === role) {
       next();
     } else {
-      res.status(403).send('Access Denied');
+	  // redirect failures to dashboard all users can access (which will send to login prompt if not logged in)
+      res.redirect(`/dashboard`);
     }
   };
 }
