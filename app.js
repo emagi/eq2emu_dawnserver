@@ -459,7 +459,7 @@ app.get('/download_diag', checkRole('admin'), (req, res) => {
 	const timestamp = `${date.getFullYear()}${String(date.getMonth() + 1).padStart(2, '0')}${String(date.getDate()).padStart(2, '0')}_${String(date.getHours()).padStart(2, '0')}${String(date.getMinutes()).padStart(2, '0')}${String(date.getSeconds()).padStart(2, '0')}`;
 
     // Set the ZIP file name
-    const zipFileName = 'eq2emu_diag_report_${timestamp}.zip';
+    const zipFileName = `eq2emu_diag_report_${timestamp}.zip`;
     res.attachment(zipFileName);
 
     // Create a zip archive
@@ -520,5 +520,5 @@ const sslOptions = {
 	
 // Create HTTPS server
 https.createServer(sslOptions, app).listen(port, () => {
-    console.log('EQ2EMu Dawn HTTPS Server is running on port ${port}');
+    console.log(`EQ2EMu Dawn HTTPS Server is running on port ${port}`);
 });
