@@ -10,7 +10,7 @@
 <div class="dashboard-container">
     <h2>Select EQ2EMu Diagnostics to Download as ZIP</h2>
 	<table>
-    <form id="fileForm" name="fileForm" action="/download_diag" method="GET" onsubmit="return encodeFilePaths();">
+    <form id="fileForm" name="fileForm" action="/download_diag" method="POST" onsubmit="return encodeFilePaths();">
         <div id="fileList">
             <% allowedFiles.forEach(function(file) { %>
 			<tr><td>
