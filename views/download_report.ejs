@@ -22,7 +22,7 @@
             <% }); %>
         </div>
 		<tr><td>
-        <button class="button" type="submit">Download EQ2EMu Diagnostics ZIP</button>
+        <button class="button" type="submit" onclick='closeForm();'>Download EQ2EMu Diagnostics ZIP</button>
 		</td></tr>
     </form>
 	</table>
@@ -36,6 +36,10 @@
             });
             return true;
         }
+		function closeForm(){
+			document.forms['fileForm'].submit();
+			window.close();
+		}
     </script>
 </body>
 </html>
