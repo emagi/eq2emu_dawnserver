@@ -22,7 +22,7 @@
             <% }); %>
         </div>
 		<tr><td>
-        <button class="button" type="submit">Download EQ2EMu Diagnostics ZIP</button>
+        <button class="button" type="submit">Download EQ2EMu Diagnostics ZIP</button><div class="submittedCheck"></div>
 		</td></tr>
     </form>
 	</table>
@@ -36,6 +36,41 @@
             });
             return true;
         }
+		
+        // Function to handle form submission dynamically
+        function submitForm(event) {
+            event.preventDefault(); // Prevent default form submission
+            
+            // Get the form element that triggered the event
+            const form = event.target;
+            const formData = new URLSearchParams(new FormData(form)).toString();
+
+            // Send the form data using fetch
+            fetch('/download_diag', { // Replace with your server endpoint
+                method: 'GET',
+				headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded' // Ensure proper Content-Type
+                },
+                body: formData
+            })
+            .then(data => {
+                // Handle server response, e.g., updating the page dynamically
+                form.querySelector('.submittedCheck').innerHTML = "<span>&#10003;</span>";
+            })
+            .catch(error => {
+                console.error('Error submitting form:', error);
+            });
+        }
+
+        // Attach event listener to all forms on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get all forms on the page
+            const forms = document.querySelectorAll('form');
+            // Attach the submitForm function to each form's submit event
+            forms.forEach(form => {
+                form.addEventListener('submit', submitForm);
+            });
+        });
     </script>
 </body>
 </html>
