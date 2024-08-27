@@ -7,8 +7,8 @@
     <link href="/css/style.css" rel="stylesheet" type="text/css">
 </head>
 <body>
-    <h1>Select EQ2EMu Diagnostics to Download as ZIP</h1>
-    
+<div class="dashboard-container">
+    <h2>Select EQ2EMu Diagnostics to Download as ZIP</h2>
 	<table>
     <form id="fileForm" action="/download_diag" method="GET" onsubmit="return encodeFilePaths()">
         <div id="fileList">
@@ -21,9 +21,12 @@
 			</td></tr>
             <% }); %>
         </div>
+		<tr><td>
         <button type="submit">Download EQ2EMu Diagnostics ZIP</button>
+		</td></tr>
     </form>
 	</table>
+</div>
 
     <script>
         function encodeFilePaths() {
