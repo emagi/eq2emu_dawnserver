@@ -90,6 +90,7 @@
 	wl_status = "available"
   } %>
   <td id="statusWorldLoginConnected" class="<%= wl_status %>"><%= worldlogin_connected %></td>
+  <td>
   <table border="0" cellspacing="0" cellpadding="0">
 	  <tr>
 		  <th><button id="view_world_log" class="button" onclick="open_popup('/view_world_log')">View World Server Log</button></th>
@@ -98,6 +99,7 @@
 		  <th><button id="list_clients" class="button" onclick="open_popup('/world_clients')">List World Clients</button></th>
 	  </tr>
   </table>
+  </td>
   <td id="statusWorldPID"><%= world_pid %></td>
   </tr>
   </table>
