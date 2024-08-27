@@ -151,36 +151,36 @@
 				
 				
 				if (data.role == 'admin') {
-						document.getElementById("view_login_log").style.display = "block";
-						document.getElementById("view_world_log").style.display = "block";
+						document.getElementById("view_login_log").disabled = false;
+						document.getElementById("view_world_log").disabled = false;
 					if(data.login_pid > 0) {
-						document.getElementById("start_login").style.display = "none";
-						document.getElementById("stop_login").style.display = "block";
+						document.getElementById("start_login").disabled = true;
+						document.getElementById("stop_login").disabled = false;
 					}
 					else {
-						document.getElementById("start_login").style.display = "block";
-						document.getElementById("stop_login").style.display = "none";
+						document.getElementById("start_login").disabled = false;
+						document.getElementById("stop_login").disabled = true;
 					}
 					
 					if(data.world_pid > 0) {
-						document.getElementById("start_world").style.display = "none";
-						document.getElementById("stop_world").style.display = "block";
-						document.getElementById("list_clients").style.display = "block";
+						document.getElementById("start_world").disabled = true;
+						document.getElementById("stop_world").disabled = false;
+						document.getElementById("list_clients").disabled = false;
 					}
 					else {
-						document.getElementById("start_world").style.display = "block";
-						document.getElementById("stop_world").style.display = "none";
-						document.getElementById("list_clients").style.display = "none";
+						document.getElementById("start_world").disabled = false;
+						document.getElementById("stop_world").disabled = true;
+						document.getElementById("list_clients").disabled = true;
 					}
 				}
 				else {
-						document.getElementById("start_login").style.display = "none";
-						document.getElementById("stop_login").style.display = "none";
-						document.getElementById("start_world").style.display = "none";
-						document.getElementById("stop_world").style.display = "none";
-						document.getElementById("list_clients").style.display = "none";
-						document.getElementById("view_login_log").style.display = "none";
-						document.getElementById("view_world_log").style.display = "none";
+						document.getElementById("start_login").disabled = true;
+						document.getElementById("stop_login").disabled = true;
+						document.getElementById("start_world").disabled = true;
+						document.getElementById("stop_world").disabled = true;
+						document.getElementById("list_clients").disabled = true;
+						document.getElementById("view_login_log").disabled = true;
+						document.getElementById("view_world_log").disabled = true;
 				}
                 document.getElementById('serverStatusHeader').innerText = message;
                 document.getElementById('serverStatusHeader').className = server_status;
