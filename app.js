@@ -439,8 +439,8 @@ app.get('/download_report', checkRole('admin'), (req, res) => {
     res.render('download_report', { allowedFiles });
 });
 
-app.get('/download_diag', checkRole('admin'), (req, res) => {
-    const selectedFiles = req.query.files;
+app.post('/download_diag', checkRole('admin'), (req, res) => {
+    const selectedFiles = req.body.files;
 
     if (!selectedFiles || selectedFiles.length === 0) {
         return res.status(400).send('No files selected.');
