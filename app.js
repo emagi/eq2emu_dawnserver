@@ -445,6 +445,9 @@ app.get('/download_diag', checkRole('admin'), (req, res) => {
         return res.status(400).send('No files selected.');
     }
 
+    // Decode the file paths
+    const decodedFiles = selectedFiles.map(file => decodeURIComponent(file));
+	
     // Filter the selected files to ensure they are in the allowed list
     const filesToZip = allowedFiles.filter(file => selectedFiles.includes(file.path));
 
