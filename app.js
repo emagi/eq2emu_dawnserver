@@ -469,8 +469,8 @@ app.post('/download_diag', checkRole('admin'), (req, res) => {
 
     // Handle errors
     archive.on('error', (err) => {
-        throw err;
-    });
+        console.log(err);
+    })
 
     // Pipe archive data to the response
     archive.pipe(res);
