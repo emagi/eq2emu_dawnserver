@@ -41,6 +41,7 @@
    <% if (role == 'admin') { %>
 	<table><tr>
 	<th><button id="register" class="button" onclick="open_popup('/register')">Create New User</button></th>
+	<th><button id="download_report" class="button" onclick="open_popup('/download_report')">Generate EQ2Emu Diag Report</button></th>
 	<th><a href="#" class="button" onclick="if(confirm('Are you sure you wish to force restart the dawn web server?') == true) MakeCall('/kill_server');">Kill/Restart Dawn Web Server</a></th>
 	<th><a href="#" class="button" onclick="if(confirm('Are you sure you wish to restart all services?') == true) MakeCall('/kill_and_compile');">Kill/Compile Login, World, Web Server</a></th>
 	</tr></table><br/>
