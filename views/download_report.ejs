@@ -10,7 +10,7 @@
 <div class="dashboard-container">
     <h2>Select EQ2EMu Diagnostics to Download as ZIP</h2>
 	<table>
-    <form id="fileForm" action="/download_diag" method="GET" onsubmit="return encodeFilePaths()">
+    <form id="fileForm" name="fileForm" action="/download_diag" method="GET" onsubmit="return encodeFilePaths(); closeForm();">
         <div id="fileList">
             <% allowedFiles.forEach(function(file) { %>
 			<tr><td>
@@ -22,7 +22,7 @@
             <% }); %>
         </div>
 		<tr><td>
-        <button class="button" type="submit" onclick='closeForm();'>Download EQ2EMu Diagnostics ZIP</button>
+        <button class="button" type="submit">Download EQ2EMu Diagnostics ZIP</button>
 		</td></tr>
     </form>
 	</table>
@@ -37,7 +37,6 @@
             return true;
         }
 		function closeForm(){
-			document.forms['fileForm'].submit();
 			window.close();
 		}
     </script>
