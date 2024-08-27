@@ -107,8 +107,13 @@
         async function fetchUpdates() {
             try {
                 const response = await fetch('/dashboard_update');
-                const data = await response.json();
-                
+				try {
+					const data = await response.json();
+                }catch(error) {
+					if(error instanceof SyntaxError) {
+						window.location.href = window.location.host + '/';
+					}
+				}
                 // Update the DOM with the fetched data
 				var message = "Unknown Status";
 				if(data.server_loaded == 0) {
