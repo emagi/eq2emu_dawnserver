@@ -342,7 +342,7 @@ app.get('/dashboard_update', (req, res) => {
 	  server_recompile: ServerRecompile
     }));
   } else {
-    res.redirect(`/`);
+    res.send("{'server_loaded':-1}");
 	res.end();
   }
 });
