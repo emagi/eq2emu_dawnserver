@@ -425,6 +425,64 @@ app.post('/setadminstatus', checkRole('admin'), (req, res) => {
   res.end();
 });
 
+const allowedFiles = [
+    { path: '/eq2emu/eq2emu_dawnserver/eq2dawn.log', name: 'eq2dawn.log' },
+    { path: '/eq2emu/eq2emu_dawnserver/eq2dawn_last.log', name: 'eq2dawn_last.log' },
+    { path: '/eq2emu/eq2emu/server/logs/eq2login.log', name: 'eq2login.log' },
+    { path: '/eq2emu/eq2emu/server/logs/eq2login_last.log', name: 'eq2login_last.log' },
+    { path: '/eq2emu/eq2emu/server/logs/eq2world.log', name: 'eq2world.log' },
+    { path: '/eq2emu/eq2emu/server/logs/eq2world_last.log', name: 'eq2world_last.log' }
+];
+
+app.get('/download_report', checkRole('admin'), (req, res) => {
+    res.render('download_report', { allowedFiles });
+});
+
+app.get('/download_diag', checkRole('admin'), (req, res) => {
+    const selectedFiles = req.query.files;
+
+    if (!selectedFiles || selectedFiles.length === 0) {
+        return res.status(400).send('No files selected.');
+    }
+
+    // Filter the selected files to ensure they are in the allowed list
+    const filesToZip = allowedFiles.filter(file => selectedFiles.includes(file.path));
+
+    if (filesToZip.length === 0) {
+        return res.status(400).send('Selected files are not allowed.');
+    }
+	
+	const date = new Date();
+	const timestamp = `${date.getFullYear()}${String(date.getMonth() + 1).padStart(2, '0')}${String(date.getDate()).padStart(2, '0')}_${String(date.getHours()).padStart(2, '0')}${String(date.getMinutes()).padStart(2, '0')}${String(date.getSeconds()).padStart(2, '0')}`;
+
+    // Set the ZIP file name
+    const zipFileName = 'eq2emu_diag_report_${timestamp}.zip';
+    res.attachment(zipFileName);
+
+    // Create a zip archive
+    const archive = archiver('zip', {
+        zlib: { level: 9 } // Sets the compression level
+    });
+
+    // Handle errors
+    archive.on('error', (err) => {
+        throw err;
+    });
+
+    // Pipe archive data to the response
+    archive.pipe(res);
+
+    // Append files to the archive
+    filesToZip.forEach((file) => {
+        archive.file(file.path, { name: file.name });
+    });
+
+    // Finalize the archive (this calls res.end() when done)
+    archive.finalize();
+});
+
+
+
 const remoteLoginServerUrl = "https://127.0.0.1:9101/status";
 const login_username = config.polling.login_admin; // Replace with actual username
 const login_password = config.polling.login_password; // Replace with actual password

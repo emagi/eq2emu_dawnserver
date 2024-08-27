@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select EQ2EMu Diagnostics to Download</title>
+    <link href="/css/style.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+    <h1>Select EQ2EMu Diagnostics to Download (ZIP)</h1>
+    
+    <form id="fileForm" action="/download_diag" method="GET">
+        <div id="fileList">
+            <% allowedFiles.forEach(function(file) { %>
+                <div>
+                    <input type="checkbox" name="files[]" value="<%= file.path %>" checked>
+                    <label for="files[]"><%= file.name %></label>
+                </div>
+            <% }); %>
+        </div>
+        <button type="submit">Download EQ2EMu Diagnostics ZIP</button>
+    </form>
+</body>
+</html>
