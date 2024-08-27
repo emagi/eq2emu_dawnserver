@@ -15,7 +15,7 @@
             <% allowedFiles.forEach(function(file) { %>
 			<tr><td>
                 <div>
-                    <input type="checkbox" name="files[]" value="<%= encodeURIComponent(file.path) %>">
+                    <input type="checkbox" name="files[]" value="<%= encodeURIComponent(file.path) %>" checked>
                     <label for="files[]"><%= file.name %></label>
                 </div>
 			</td></tr>
