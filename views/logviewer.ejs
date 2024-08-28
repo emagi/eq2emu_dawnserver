@@ -13,13 +13,26 @@
     <pre id="log-container"></pre>
     <script>
         // Raw log content with ANSI codes
-        const logContent = `<%= logContent.replace(/`/g, '\\`') %>`;
+        const rawLogContent = `<%- logContent %>`;
+
+        // Escape HTML special characters
+        const escapeHtml = (unsafe) => {
+            return unsafe
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        };
+
+        // Escaped log content
+        const escapedLogContent = escapeHtml(rawLogContent);
 
         // Create an instance of AnsiUp
         const ansiUp = new AnsiUp();
 
-        // Convert the log content to HTML, line by line
-        const htmlContent = logContent.split('\n').map(line => ansiUp.ansi_to_html(line)).join('<br>');
+        // Convert ANSI codes to HTML
+        const htmlContent = ansiUp.ansi_to_html(escapedLogContent);
 
         // Display the converted content in the pre tag
         document.getElementById('log-container').innerHTML = htmlContent;
