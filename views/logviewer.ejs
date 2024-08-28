@@ -13,7 +13,7 @@
     <pre id="log-container"></pre>
     <script>
         // Raw log content with ANSI codes
-        const rawLogContent = `<%- logContent %>`;
+        const rawLogContent = `<%- logContent.replace(/`/g, '&#96;') %>`;
 
         // Unescape HTML special characters
         const unescapeHtml = (safe) => {
@@ -23,8 +23,7 @@
                 .replace(/&gt;/g, ">")
                 .replace(/&quot;/g, '"')
                 .replace(/&#039;/g, "'")
-                .replace(/&#096;/g, "'")
-                .replace(/`/g, "'");
+                .replace(/&#96;/g, "`"); // Unescape backtick
         };
 
         // Unescaped log content
