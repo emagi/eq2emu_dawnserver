@@ -15,24 +15,24 @@
         // Raw log content with ANSI codes
         const rawLogContent = `<%- logContent %>`;
 
-        // Escape HTML special characters
-        const escapeHtml = (unsafe) => {
-            return unsafe
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
+        // Unescape HTML special characters
+        const unescapeHtml = (safe) => {
+            return safe
+                .replace(/&amp;/g, "&")
+                .replace(/&lt;/g, "<")
+                .replace(/&gt;/g, ">")
+                .replace(/&quot;/g, '"')
+                .replace(/&#039;/g, "'");
         };
 
-        // Escaped log content
-        const escapedLogContent = escapeHtml(rawLogContent);
+        // Unescaped log content
+        const unescapedLogContent = unescapeHtml(rawLogContent);
 
         // Create an instance of AnsiUp
         const ansiUp = new AnsiUp();
 
         // Convert ANSI codes to HTML
-        const htmlContent = ansiUp.ansi_to_html(escapedLogContent);
+        const htmlContent = ansiUp.ansi_to_html(unescapedLogContent);
 
         // Display the converted content in the pre tag
         document.getElementById('log-container').innerHTML = htmlContent;
