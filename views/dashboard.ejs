@@ -56,7 +56,7 @@
         <th>PID</th>
   </tr>
   <tr>
-  <td>Login Server</td>
+  <td id="loginName">Login</td>
   <td id="statusLogin" class="<%= ls_status %>"><%= login_status %></td>
   <td id="statusLoginUptime">
   <% if (login_uptime !== '') { %>
@@ -78,7 +78,7 @@
   
   
   <tr>
-  <td>World Server</td>
+  <td id="worldName">World</td>
   <td id="statusWorld" class="<%= ws_status %>"><%= world_status %></td>
   <td id="statusWorldUptime">
   <% if (world_uptime !== '') { %>
@@ -192,11 +192,17 @@
 				document.getElementById('statusWorldUptime').innerText = data.world_uptime;
 				document.getElementById('statusWorldLoginConnected').innerText = data.worldlogin_connected;
 				document.getElementById('statusWorldLoginConnected').className = wl_status;
+				if(data.world_version !== null) {
+					document.getElementById('worldName').innerText = "World " + data.world_version.version + String.fromCharCode(13) + data.world_version.compile_date + " " + data.world_version.compile_time;
+				}
 				
 				document.getElementById('statusLoginPID').innerText = data.login_pid;
 				document.getElementById('statusLogin').innerText = data.login_status;
 				document.getElementById('statusLogin').className = ls_status;
 				document.getElementById('statusLoginUptime').innerText = data.login_uptime;
+				if(data.login_version !== null) {
+					document.getElementById('loginName').innerText = "Login " + data.login_version.version + String.fromCharCode(13) + data.login_version.compile_date + " " + data.login_version.compile_time;
+				}
             } catch (error) {
                 console.error('Error fetching updates:', error);
             }

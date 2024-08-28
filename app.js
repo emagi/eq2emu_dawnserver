@@ -37,6 +37,9 @@ let serverWorldStatus = 'Unknown';
 let loginStatus = {};
 let worldStatus = {};
 
+let loginVersion = null;
+let worldVersion = null;
+
 let loginClients = {};
 let worldClients = {};
 
@@ -137,13 +140,21 @@ app.set('view engine', 'ejs');
 // Polling function
 const startLoginPolling = (url, username, password) => {
   setInterval(async () => {
-    var response = await fetchStatus(url, sslFiles, username, password);
+    var response = await fetchStatus(url + "/status", sslFiles, username, password);
 	if(response != null) {
 		serverLoginStatus = response.login_status;
 		loginStatus = response;
+		
+		if(loginVersion == null) {
+			var ver_response = await fetchStatus(url + "/version", sslFiles, username, password);
+			if(ver_response != null) {
+				loginVersion = ver_response;
+			}
+		}
 	}
 	else {
 		serverLoginStatus = "offline";
+		loginVersion = null;
 		if(config.http.auto_restart === "1" && ServerLoaded == 1) {
 			startLoginThrottled();
 		}
@@ -153,6 +164,7 @@ const startLoginPolling = (url, username, password) => {
   })
   .catch(err => {
 	  loginPID = -1;
+	  loginVersion = null;
 	  if(config.http.auto_restart === "1" && ServerLoaded == 1) {
 		startLoginThrottled();
 	  }
@@ -163,13 +175,21 @@ const startLoginPolling = (url, username, password) => {
 
 const startWorldPolling = (url, username, password) => {
   setInterval(async () => {
-    var response = await fetchStatus(url, sslFiles, username, password);
+    var response = await fetchStatus(url + "/status", sslFiles, username, password);
 	if(response != null) {
 		serverWorldStatus = response.world_status;
 		worldStatus = response;
+		
+		if(worldVersion == null) {
+			var ver_response = await fetchStatus(url + "/version", sslFiles, username, password);
+			if(ver_response != null) {
+				worldVersion = ver_response;
+			}
+		}
 	}
 	else {
 		serverWorldStatus = "offline";
+		worldVersion = null;
 		if(config.http.auto_restart === "1" && ServerLoaded == 1) {
 			startWorldThrottled();
 		}
@@ -180,6 +200,7 @@ const startWorldPolling = (url, username, password) => {
   })
   .catch(err => {
 	  worldPID = -1;
+	  worldVersion = null;
 	  if(config.http.auto_restart === "1" && ServerLoaded == 1) {
 		startWorldThrottled();
 	  }
@@ -305,7 +326,9 @@ app.get('/dashboard', (req, res) => {
 	  login_pid: loginPID,
 	  world_pid: worldPID,
 	  server_loaded: ServerLoaded,
-	  server_recompile: ServerRecompile
+	  server_recompile: ServerRecompile,
+	  login_version: loginVersion,
+	  world_version: worldVersion
     });
   } else {
     res.redirect(`/`);
@@ -340,7 +363,9 @@ app.get('/dashboard_update', (req, res) => {
 	  login_pid: loginPID,
 	  world_pid: worldPID,
 	  server_loaded: ServerLoaded,
-	  server_recompile: ServerRecompile
+	  server_recompile: ServerRecompile,
+	  login_version: loginVersion,
+	  world_version: worldVersion
     }));
   } else {
     res.send(JSON.stringify({
@@ -488,7 +513,7 @@ app.post('/download_diag', checkRole('admin'), (req, res) => {
 
 
 
-const remoteLoginServerUrl = "https://127.0.0.1:9101/status";
+const remoteLoginServerUrl = "https://127.0.0.1:9101";
 const login_username = config.polling.login_admin; // Replace with actual username
 const login_password = config.polling.login_password; // Replace with actual password
 
@@ -505,7 +530,7 @@ if (remoteLoginServerUrl) {
 
 // Start polling if URL is provided
 if (remoteWorldServerUrl) {
-  startWorldPolling(remoteWorldServerUrl + "/status", world_username, world_password);
+  startWorldPolling(remoteWorldServerUrl, world_username, world_password);
   startWorldClientPolling(remoteWorldServerUrl + "/clients", world_username, world_password);
 }
 
