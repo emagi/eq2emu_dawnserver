@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Log File Viewer</title>
   <link href="/css/style.css" rel="stylesheet" type="text/css">
-    <script src="https://cdn.jsdelivr.net/npm/ansi-to-html@0.7.0/lib/ansi_to_html.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ansi_up@5.0.0/ansi_up.min.js"></script>
 </head>
 <body>
 <div class="dashboard-container">
@@ -15,12 +15,11 @@
         // Log content with ANSI codes
         const logContent = `<%= logContent.replace(/`/g, '\\`') %>`;
 
-        // Create an instance of AnsiToHtml
-        const AnsiToHtml = require('ansi-to-html');
-        const convert = new AnsiToHtml();
+        // Create an instance of AnsiUp
+        const ansiUp = new AnsiUp();
 
         // Convert ANSI codes to HTML
-        const htmlContent = convert.toHtml(logContent);
+        const htmlContent = ansiUp.ansi_to_html(logContent);
 
         // Display the converted content in the pre tag
         document.getElementById('log-container').innerHTML = htmlContent;
