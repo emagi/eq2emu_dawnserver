@@ -5,11 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Log File Viewer</title>
   <link href="/css/style.css" rel="stylesheet" type="text/css">
+  <script src="https://cdn.jsdelivr.net/npm/ansi-to-html@0.7.0/lib/ansi_to_html.js"></script>
 </head>
 <body>
 <div class="dashboard-container">
     <h1>Log File</h1>
-    <pre><%= logContent %></pre>
+    <pre id="log-container"></pre>
+    <script>
+        // Log content with ANSI codes
+        const logContent = `<%= logContent.replace(/`/g, '\\`') %>`;
+        
+        // Create an instance of AnsiToHtml
+        const ansiToHtml = new AnsiUp();
+
+        // Convert ANSI codes to HTML
+        const htmlContent = ansiToHtml.ansi_to_html(logContent);
+
+        // Display the converted content in the pre tag
+        document.getElementById('log-container').innerHTML = htmlContent;
+    </script>
 </div>
 </body>
 </html>
