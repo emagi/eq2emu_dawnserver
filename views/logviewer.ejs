@@ -12,14 +12,14 @@
     <h1>Log File</h1>
     <pre id="log-container"></pre>
     <script>
-        // Log content with ANSI codes
+        // Raw log content with ANSI codes
         const logContent = `<%= logContent.replace(/`/g, '\\`') %>`;
 
         // Create an instance of AnsiUp
         const ansiUp = new AnsiUp();
 
-        // Convert ANSI codes to HTML
-        const htmlContent = ansiUp.ansi_to_html(logContent);
+        // Convert the log content to HTML, line by line
+        const htmlContent = logContent.split('\n').map(line => ansiUp.ansi_to_html(line)).join('<br>');
 
         // Display the converted content in the pre tag
         document.getElementById('log-container').innerHTML = htmlContent;
