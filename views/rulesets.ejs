@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rulesets Management</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <link href="/css/style.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+
+<script>
+	function MakeCall(uri) {
+		fetch(uri)
+			.then(response => {
+			// no need
+			})
+			.catch(error => {
+				console.error('Error making call:', error);
+			});
+	}
+</script>
+<div class="dashboard-container">
+  <h1>Rulesets Management</h1>
+  <button id="reload_rules" class="button" onclick="if(confirm('Are you sure you wish to reload rules on the world server?') == true) { MakeCall('/reloadrules'); window.alert('Reload Rules Request Sent'); }">Reload Rules</button>
+
+  <% if (error) { %>
+    <p style="color: red;"><%= error %></p>
+  <% } %>
+
+
+  <h2>Add New Ruleset</h2>
+  <form method="POST" action="/add_ruleset">
+    <input type="text" name="ruleset_id" placeholder="Ruleset ID">
+    <input type="text" name="ruleset_name" placeholder="Ruleset Name">
+    <button type="submit">Add</button>
+  </form>
+  
+  <!-- Dropdown to select ruleset -->
+  <form method="GET" action="/rulesets">
+    <label for="ruleset-select">Choose a Ruleset:</label>
+    <select name="ruleset_id" id="ruleset-select" onchange="this.form.submit()">
+      <option value="">-- Select Ruleset --</option>
+      <% rulesetList.forEach(rs => { %>
+        <option value="<%= rs.ruleset_id %>" <%= selectedRuleset && selectedRuleset.ruleset_id === rs.ruleset_id ? 'selected' : '' %>>
+          <%= rs.ruleset_name %> (ID: <%= rs.ruleset_id %>)
+        </option>
+      <% }) %>
+    </select>
+  </form>
+
+  <% if (selectedRuleset) { %>
+    <h2>Details for Ruleset: <%= selectedRuleset.ruleset_name %> (ID: <%= selectedRuleset.ruleset_id %>)</h2>
+	<!-- Form to add rule_value -->
+	<div>
+	<table>
+		<tr>
+		<form method="POST" action="/add-rule-value">
+			<input type="hidden" name="ruleset_id" value="<%= selectedRuleset.ruleset_id %>"/>
+			<td>Category: <input type="text" name="rule_category" value="R_Category"/></td>
+			<td>Type: <input type="text" name="rule_type" value="RuleType"/></td>
+			<td>Value: <input type="text" name="rule_value" value="Value"/></td>
+			<td>Description: <input type="text" name="description" value=""/></td>
+		</tr>
+		<tr>
+			<td><button type="submit">Add</button></td>
+		</tr>
+		</form>
+	</tr></table>
+	</div>
+    <table border="1">
+      <thead>
+        <tr>
+          <th>Category</th>
+          <th>Type</th>
+          <th>Rule Value</th>
+          <th>Description</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% rulesetDetails.forEach(detail => { %>
+          <tr>
+            <td><%= detail.rule_category %></td>
+            <td><%= detail.rule_type %></td>
+            <td>
+              <!-- Form to update rule_value -->
+              <form method="POST" action="/update-rule-value/<%= detail.detail_id %>">
+                <input type="hidden" name="ruleset_id" value="<%= selectedRuleset.ruleset_id %>"/>
+                <input type="text" name="rule_value" value="<%= detail.rule_value %>">
+                <button type="submit">Update</button>
+              </form>
+            </td>
+            <td><%= detail.description %></td>
+            <td>
+              <!-- Optionally, other actions for the rule -->
+              <form method="POST" action="/delete-detail/<%= detail.detail_id %>">
+                <input type="hidden" name="ruleset_id" value="<%= selectedRuleset.ruleset_id %>"/>
+                <button type="submit">Delete</button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  <% } else { %>
+    <p>Please select a ruleset from the dropdown to see details.</p>
+  <% } %>
+</div>
+</body>
+</html>

@@ -135,6 +135,7 @@ app.use(session({
   resave: true,
   saveUninitialized: true
 }));
+
 app.set('view engine', 'ejs');
 
 // Polling function
@@ -453,6 +454,12 @@ app.post('/setadminstatus', checkRole('admin'), (req, res) => {
   res.end();
 });
 
+app.get('/reloadrules', checkRole('admin'), (req, res) => {
+  var response = postStatus(remoteWorldServerUrl + "/reloadrules", JSON.stringify({}), sslFiles, world_username, world_password);
+  res.send(response);
+  res.end();
+});
+
 const allowedFiles = [
     { path: '/eq2emu/eq2emu_dawnserver/eq2dawn.log', name: 'eq2dawn.log' },
     { path: '/eq2emu/eq2emu_dawnserver/eq2dawn_last.log', name: 'eq2dawn_last.log' },
@@ -511,6 +518,157 @@ app.post('/download_diag', checkRole('admin'), (req, res) => {
     archive.finalize();
 });
 
+var world_db = null;
+if(typeof config.worlddb !== "undefined") { 
+// Database connection
+world_db = mysql.createConnection({
+  host: config.worlddb.host,
+  user: config.worlddb.user,
+  password: config.worlddb.password,
+  database: config.worlddb.database
+});
+}
+
+
+// Function to keep MySQL connection alive
+const keepAliveWorld = () => {
+	if(world_db != null) {
+	  world_db.ping((err) => {
+		if (err) {
+		  console.error('Error pinging database:', err);
+		}
+	  });
+	}
+};
+// Ping the database every 5 minutes (300000 milliseconds)
+setInterval(keepAliveWorld, 300000);
+
+app.get('/rulesets', checkRole('admin'), (req, res) => {
+  const selectedRulesetId = req.query.ruleset_id || ''; // Get selected ruleset_id from the query parameters
+  
+  // Fetch all available rulesets for the dropdown
+  const rulesetQuery = 'SELECT ruleset_id, ruleset_name FROM rulesets';
+  if(world_db != null) {
+	  world_db.query(rulesetQuery, (err, rulesetList) => {
+		if (err) {
+		  return res.status(500).send(`Error fetching ruleset list: ${err.message}`);
+		}
+
+		if (!selectedRulesetId) {
+		  // If no ruleset is selected, just render the page with the dropdown
+		  return res.render('rulesets', { rulesetList, selectedRuleset: null, error: null, rulesetDetails: [] });
+		}
+
+		// Fetch the selected ruleset details
+		const detailsQuery = `
+		  SELECT rs.id, rs.ruleset_id, rs.ruleset_name, rs.ruleset_active,
+				 rd.id AS detail_id, rd.rule_category, rd.rule_type, rd.rule_value, rd.description
+		  FROM rulesets rs
+		  LEFT JOIN ruleset_details rd ON rs.ruleset_id = rd.ruleset_id
+		  WHERE rs.ruleset_id = ?
+		`;
+		
+		world_db.query(detailsQuery, [selectedRulesetId], (err, results) => {
+		  if (err) {
+			return res.status(500).send(`Error fetching ruleset details: ${err.message}`);
+		  }
+		  res.render('rulesets', {
+			rulesetList,
+			selectedRuleset: results[0], // Send selected ruleset's info
+			error: null,
+			rulesetDetails: results // Send all details of the selected ruleset
+		  });
+		});
+	  });
+  }
+});
+
+app.post('/add_ruleset', checkRole('admin'), (req, res) => {
+  const { ruleset_id, ruleset_name } = req.body;
+  const query = 'INSERT INTO rulesets (ruleset_id, ruleset_name, ruleset_active) VALUES (?, ?, 1)';
+  if(world_db != null) {
+	  world_db.query(query, [ruleset_id, ruleset_name], (err, result) => {
+		if (err) {
+		  return res.status(500).send(`Error adding ruleset: ${err.message}`);
+		}
+		res.redirect('/rulesets?ruleset_id=' + ruleset_id);
+	  });
+  }
+});
+
+app.post('/ruleset_update/:id', checkRole('admin'), (req, res) => {
+  const { ruleset_name, ruleset_active } = req.body;
+  const query = 'UPDATE rulesets SET ruleset_name = ?, ruleset_active = ? WHERE id = ?';
+  if(world_db != null) {
+	  world_db.query(query, [ruleset_name, ruleset_active, req.params.id], (err, result) => {
+		if (err) {
+		  return res.status(500).send(`Error updating ruleset: ${err.message}`);
+		}
+		res.redirect('/rulesets?ruleset_id=' + req.params.id);
+	  });
+  }
+});
+
+app.post('/ruleset_delete/:id', checkRole('admin'), (req, res) => {
+  const query = 'DELETE FROM rulesets WHERE id = ?';
+  if(world_db != null) {
+	  world_db.query(query, [req.params.id], (err, result) => {
+		if (err) {
+		  return res.status(500).send(`Error deleting ruleset: ${err.message}`);
+		}
+		res.redirect('/rulesets');
+	  });
+  }
+});
+
+// Add details to ruleset
+app.post('/add-rule-value', checkRole('admin'), (req, res) => {
+  const { ruleset_id, rule_category, rule_type, rule_value, description } = req.body;
+  const query = 'INSERT INTO ruleset_details (ruleset_id, rule_category, rule_type, rule_value, description) VALUES (?, ?, ?, ?, ?)';
+  if(world_db != null) {
+	  world_db.query(query, [ruleset_id, rule_category, rule_type, rule_value, description], (err, result) => {
+		if (err) throw err;
+		res.redirect('/rulesets?ruleset_id=' + ruleset_id);
+	  });
+  }
+});
+
+// Update details of ruleset
+app.post('/update-detail/:id', checkRole('admin'), (req, res) => {
+  const { rule_category, rule_type, rule_value, description } = req.body;
+  const query = 'UPDATE ruleset_details SET rule_category = ?, rule_type = ?, rule_value = ?, description = ? WHERE id = ?';
+  if(world_db != null) {
+	  world_db.query(query, [rule_category, rule_type, rule_value, description, req.params.id], (err, result) => {
+		if (err) throw err;
+		res.redirect('/rulesets');
+	  });
+  }
+});
+
+// Delete ruleset detail
+app.post('/delete-detail/:id',checkRole('admin'), (req, res) => {
+  const { ruleset_id } = req.body;
+  const query = 'DELETE FROM ruleset_details WHERE id = ?';
+  if(world_db != null) {
+	  world_db.query(query, [req.params.id], (err, result) => {
+		if (err) throw err;
+		res.redirect('/rulesets?ruleset_id=' + ruleset_id);
+	  });
+  }
+});
+
+app.post('/update-rule-value/:id', checkRole('admin'), (req, res) => {
+  const { ruleset_id, rule_value } = req.body;
+  const query = 'UPDATE ruleset_details SET rule_value = ? WHERE id = ?';
+  if(world_db != null) {
+	  world_db.query(query, [rule_value, req.params.id], (err, result) => {
+		if (err) {
+		  return res.status(500).send(`Error updating rule value: ${err.message}`);
+		}
+		res.redirect('/rulesets?ruleset_id=' + ruleset_id);
+	  });
+  }
+});
 
 
 const remoteLoginServerUrl = "https://127.0.0.1:9101";

@@ -80,13 +80,13 @@ body {
 
 /* Inputs */
 input, select, textarea {
-    width: 100%;
-    padding: 10px;
+    width: 95%;
+    padding: 5px;
     margin-top: 10px;
     background-color: #444444;
     color: #e0e0e0;
     border: none;
-    border-radius: 5px;
+    border-radius: 35px;
 }
 
 /* Footer */

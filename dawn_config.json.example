@@ -12,6 +12,12 @@
     "password": "password",
     "database": "eq2dawn_web"
   },
+  "worlddb": {
+    "host": "mysql",
+    "user": "eq2emu",
+    "password": "password",
+    "database": "eq2emu"
+  },
   "polling": {
     "login_admin": "webadmin",
 	"login_password": "webpass!",
