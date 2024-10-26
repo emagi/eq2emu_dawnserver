@@ -214,7 +214,7 @@ const serverLoadedPolling = () => {
   setInterval(async () => {
    ServerLoaded = checkFileNotExist("/eq2emu/server_loading");
    ServerRecompile = checkFileNotExist("/eq2emu/eq2emu_dawnserver/recompile");
-   ServerUpdateContent = checkFileNotExist("/eq2emu/eq2emu_dawnserver/updating_content");
+   ServerUpdateContent = (checkFileNotExist("/eq2emu/eq2emu_dawnserver/updating_content") == false);
   }, 5000); // 5000 ms = 5 seconds
 };
 
