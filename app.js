@@ -450,7 +450,7 @@ app.get('/kill_and_compile', checkRole('admin'), (req, res) => {
 app.get('/update_content', checkRole('admin'), (req, res) => {
   res.send('Sent request to update world content.');
   executeScript("./update_content_fromweb.sh");
-  process.exit(0);
+  res.end();
 });
 
 app.post('/setadminstatus', checkRole('admin'), (req, res) => {
