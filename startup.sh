@@ -7,6 +7,7 @@ npm update
 npm install archiver
 
 sudo chmod +x compile_source_web.sh
+sudo chmod +x update_content_fromweb.sh
 login_status=$(pidof -x "login")
 world_status=$(pidof -x "eq2world")
 

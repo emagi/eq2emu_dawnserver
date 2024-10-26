@@ -47,6 +47,7 @@ let loginPID = -1;
 let worldPID = -1;
 let ServerLoaded = 0;
 let ServerRecompile = 0;
+let ServerUpdateContent = 0;
 
 function throttle(func, limit) {
   let inThrottle;
@@ -213,6 +214,7 @@ const serverLoadedPolling = () => {
   setInterval(async () => {
    ServerLoaded = checkFileNotExist("/eq2emu/server_loading");
    ServerRecompile = checkFileNotExist("/eq2emu/eq2emu_dawnserver/recompile");
+   ServerUpdateContent = checkFileNotExist("/eq2emu/eq2emu_dawnserver/updating_content");
   }, 5000); // 5000 ms = 5 seconds
 };
 
@@ -328,6 +330,7 @@ app.get('/dashboard', (req, res) => {
 	  world_pid: worldPID,
 	  server_loaded: ServerLoaded,
 	  server_recompile: ServerRecompile,
+	  server_update_content: ServerUpdateContent,
 	  login_version: loginVersion,
 	  world_version: worldVersion
     });
@@ -365,6 +368,7 @@ app.get('/dashboard_update', (req, res) => {
 	  world_pid: worldPID,
 	  server_loaded: ServerLoaded,
 	  server_recompile: ServerRecompile,
+	  server_update_content: ServerUpdateContent,
 	  login_version: loginVersion,
 	  world_version: worldVersion
     }));
@@ -440,6 +444,12 @@ app.get('/kill_and_compile', checkRole('admin'), (req, res) => {
   executeResult("touch /eq2emu/eq2emu_dawnserver/recompile");
   executeResult("pkill -9 login");
   executeResult("pkill -9 eq2world");
+  process.exit(0);
+});
+
+app.get('/update_content', checkRole('admin'), (req, res) => {
+  res.send('Sent request to update world content.');
+  executeScript("./update_content_fromweb.sh");
   process.exit(0);
 });
 
