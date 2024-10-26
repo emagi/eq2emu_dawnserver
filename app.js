@@ -448,8 +448,8 @@ app.get('/kill_and_compile', checkRole('admin'), (req, res) => {
 });
 
 app.get('/update_content', checkRole('admin'), (req, res) => {
-  res.send('Sent request to update world content.');
   executeScript("./update_content_fromweb.sh");
+  res.send('Sent request to update world content.');
   res.end();
 });
 
