@@ -276,69 +276,85 @@ app.post('/register', checkRole('admin'), (req, res) => {
 app.post('/login', (req, res) => {
   const { username, password } = req.body;
 
-  if (username && password) {
-    db.query('SELECT * FROM users WHERE username = ?', [username], (err, results) => {
-      if (err) throw err;
-
-      if (results.length > 0) {
-        const user = results[0];
-        const hashedPassword = hashPassword(password, user.salt);
-
-        if (hashedPassword === user.password) {
-          req.session.loggedin = true;
-          req.session.username = username;
-          req.session.role = user.role; // Store user role in session
-          res.redirect(`/dashboard`); // Pass the URL as a query parameter
-        } else {
-          res.send('Incorrect Username and/or Password!');
-        }
-      } else {
-        res.send('Incorrect Username and/or Password!');
-      }
-      res.end();
-    });
-  } else {
-    res.send('Please enter Username and Password!');
-    res.end();
+  // 1) missing credentials → 400
+  if (!username || !password) {
+    return res.status(400).send('Please enter Username and Password!');
   }
+
+  // 2) lookup user
+  db.query(
+    'SELECT * FROM users WHERE username = ?',
+    [username],
+    (err, results) => {
+      // 2a) DB error → 500
+      if (err) {
+        console.error('Login query error:', err);
+        return res.status(500).send('Internal server error');
+      }
+
+      // 2b) no user → 401
+      if (results.length === 0) {
+        return res.status(401).send('Incorrect Username and/or Password!');
+      }
+
+      const user = results[0];
+      const hashed = hashPassword(password, user.salt);
+
+      // 2c) bad password → 401
+      if (hashed !== user.password) {
+        return res.status(401).send('Incorrect Username and/or Password!');
+      }
+
+      // 3) success → set session + redirect
+      req.session.loggedin = true;
+      req.session.username = username;
+      req.session.role     = user.role;
+      return res.redirect('/dashboard');
+    }
+  );
 });
 
 app.get('/dashboard', (req, res) => {
-  if (req.session.loggedin) {
-	var loginUptime = "";
-	var worldUptime = "";
-	var wl_connected = "disconnected";
-	if(loginStatus.hasOwnProperty("login_uptime_string")) {
-		loginUptime = loginStatus.login_uptime_string;
-	}
-	if(worldStatus.hasOwnProperty("world_uptime_string")) {
-		worldUptime = worldStatus.world_uptime_string;
-	}
-	if(worldStatus.hasOwnProperty("login_connected")) {
-		wl_connected = worldStatus.login_connected;
-	}
-    res.render('dashboard', {
-      username: req.session.username,
-      role: req.session.role,
-      uptime: process.uptime(),
-      login_status: serverLoginStatus, // Use the polled server status
-      world_status: serverWorldStatus, // Use the polled server status,
-      login_uptime: loginUptime, // Use the polled server status
-      world_uptime: worldUptime, // Use the polled server status
-	  worldlogin_connected: wl_connected,
-	  login_pid: loginPID,
-	  world_pid: worldPID,
-	  server_loaded: ServerLoaded,
-	  server_recompile: ServerRecompile,
-	  server_update_content: ServerUpdateContent,
-	  login_version: loginVersion,
-	  world_version: worldVersion
-    });
-  } else {
-    res.redirect(`/`);
+  // 1) Not logged in → redirect and return
+  if (!req.session.loggedin) {
+    return res.redirect('/');
   }
-  res.end();
+
+  // 2) Logged in → compute your status vars
+  let loginUptime    = "";
+  let worldUptime    = "";
+  let wl_connected   = "disconnected";
+
+  if (loginStatus.login_uptime_string) {
+    loginUptime = loginStatus.login_uptime_string;
+  }
+  if (worldStatus.world_uptime_string) {
+    worldUptime = worldStatus.world_uptime_string;
+  }
+  if (worldStatus.login_connected) {
+    wl_connected = worldStatus.login_connected;
+  }
+
+  // 3) Render exactly once, then return
+  return res.render('dashboard', {
+    username:              req.session.username,
+    role:                  req.session.role,
+    uptime:                process.uptime(),
+    login_status:          serverLoginStatus,
+    world_status:          serverWorldStatus,
+    login_uptime:          loginUptime,
+    world_uptime:          worldUptime,
+    worldlogin_connected:  wl_connected,
+    login_pid:             loginPID,
+    world_pid:             worldPID,
+    server_loaded:         ServerLoaded,
+    server_recompile:      ServerRecompile,
+    server_update_content: ServerUpdateContent,
+    login_version:         loginVersion,
+    world_version:         worldVersion
+  });
 });
+
 
 app.get('/dashboard_update', (req, res) => {
   if (req.session.loggedin) {
