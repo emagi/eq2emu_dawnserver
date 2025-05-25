@@ -697,8 +697,9 @@ app.post('/update-rule-value/:id', checkRole('admin'), (req, res) => {
 });
 
 const remoteLoginServerUrl = config.polling.login_address ?? "https://127.0.0.1:9101";
-const login_username = config.polling.login_admin; // Replace with actual username
-const login_password = config.polling.login_password; // Replace with actual password
+const login_username = config.polling.login_admin ?? ""; // Replace with actual username
+const login_password = config.polling.login_password ?? ""; // Replace with actual password
+const disableLogin = config.polling.disable_login ?? "0";
 
 const remoteWorldServerUrl = config.polling.world_address ?? "https://127.0.0.1:9002";
 const world_username = config.polling.world_admin; // Replace with actual username
@@ -707,7 +708,7 @@ const world_password = config.polling.world_password; // Replace with actual pas
 serverLoadedPolling();
 
 // Start polling if URL is provided
-if (remoteLoginServerUrl) {
+if (remoteLoginServerUrl && disableLogin === "0") {
   startLoginPolling(remoteLoginServerUrl, login_username, login_password);
 }
 
