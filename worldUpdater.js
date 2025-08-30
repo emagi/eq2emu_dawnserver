@@ -30,10 +30,10 @@ const DANGEROUS_TABLES = new Set(
 /** Grouping via simple prefixes (no regex footguns) */
 const GROUP_PREFIXES = {
   'Zones & Geography':     ['zones', 'zone', 'zone_', 'zoneaccess', 'door', 'doors', 'transport', 'navmesh', 'waypoint', 'waypoints', 'region', 'harvest_node', 'harvest_nodes'],
+  'Loot & Drops':          ['loot_', 'loot', 'chest_traps', 'spawn_loot'],
   'Spawns & Placement':    ['spawn_', 'spawn', 'spawnlocation', 'grid', 'path', 'waypoint'],
   'NPCs & Factions':       ['npc_', 'npc', 'faction', 'factions', 'language', 'languages'],
   'Items & Appearance':    ['item_', 'items', 'appear', 'appearance', 'model', 'models', 'item_appearance', 'equip'],
-  'Loot & Drops':          ['loot_', 'loot', 'chest_traps'],
   'Quests':                ['quest_', 'quests', 'quest', 'journal', 'dialogue', 'conversation', 'text'],
   'Merchants & Economy':   ['merchant', 'vendors', 'vendor', 'shop', 'economy', 'broker_'],
   'Spells & Combat':       ['spell_', 'spells', 'spell', 'ability', 'combat', 'proc', 'buff', 'effect'],
