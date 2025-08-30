@@ -128,7 +128,8 @@ const keepAlive = () => {
 setInterval(keepAlive, 300000);
 
 // Middleware
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
 app.use(cookieParser());
 app.use(session({
@@ -239,7 +240,22 @@ function checkRole(role) {
   };
 }
 
+var world_db = null;
+if(typeof config.worlddb !== "undefined") {
+// Database connection
+world_db = mysql.createConnection({
+  host: config.worlddb.host,
+  user: config.worlddb.user,
+  password: config.worlddb.password,
+  database: config.worlddb.database
+});
+}
+
 // Routes
+// app.js
+const worldUpdateRouter = require('./routes/worldUpdate')(world_db);
+app.use('/world-update', checkRole('admin'), worldUpdateRouter);
+
 app.get('/', (req, res) => {
   res.render('login');
 });
@@ -543,17 +559,6 @@ app.post('/download_diag', checkRole('admin'), (req, res) => {
     // Finalize the archive (this calls res.end() when done)
     archive.finalize();
 });
-
-var world_db = null;
-if(typeof config.worlddb !== "undefined") { 
-// Database connection
-world_db = mysql.createConnection({
-  host: config.worlddb.host,
-  user: config.worlddb.user,
-  password: config.worlddb.password,
-  database: config.worlddb.database
-});
-}
 
 
 // Function to keep MySQL connection alive

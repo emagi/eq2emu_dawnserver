@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title><%= title %></title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    :root {
+      --bg: #0f1115;
+      --panel: #171a21;
+      --panel-2: #1e2330;
+      --text: #e9eef7;
+      --muted: #a8b3c7;
+      --accent: #5aa1ff;
+      --danger: #ff6b6b;
+      --ok: #35d27e;
+      --border: #2a3142;
+      --chip: #2b3347;
+      --chip-text: #cfd8ea;
+      --badge: #26304a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; background: var(--bg); color: var(--text);
+      font: 14px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+    }
+    header {
+      padding: 18px 22px; border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; background: linear-gradient(#10131a, #0f1115);
+      z-index: 50;
+    }
+    header h1 { margin: 0; font-size: 18px; font-weight: 600; letter-spacing: 0.2px; }
+    main { padding: 18px; display: block; grid-template-columns: 520px 1fr; gap: 16px; align-items: start; }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px; overflow: hidden;
+    }
+    .card h2 {
+      font-size: 14px; letter-spacing: 0.3px;
+      margin: 0; padding: 12px 14px; background: var(--panel-2); border-bottom: 1px solid var(--border);
+    }
+    .card .body { padding: 12px; }
+    label { display: block; margin: 8px 0 4px; color: var(--muted); font-size: 12px; }
+    input[type="text"], select {
+      width: 100%; background: #0e1220; border: 1px solid var(--border);
+      color: var(--text); border-radius: 10px; padding: 10px 11px; outline: none;
+    }
+    input[type="checkbox"] { transform: translateY(1px); }
+    button {
+      background: var(--accent); color: #08121f; border: 0; border-radius: 10px;
+      padding: 10px 12px; font-weight: 700; cursor: pointer;
+    }
+    button[disabled] { opacity: 0.6; cursor: not-allowed; }
+    .row { display: flex; gap: 8px; align-items: center; }
+    .row > * { flex: 1; }
+    .split { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .log {
+      background: #0b0f1a; border: 1px solid var(--border); border-radius: 10px;
+      padding: 8px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      color: #d7e2f1; height: 220px; overflow: auto; white-space: pre-wrap;
+    }
+    .log .muted { color: var(--muted); }
+    .log .ok { color: var(--ok); }
+    .log .err { color: var(--danger); }
+    .grid { display: grid; grid-template-columns: 1fr; gap: 8px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .chip {
+      background: var(--chip); color: var(--chip-text); border: 1px solid var(--border);
+      border-radius: 999px; padding: 4px 10px; font-size: 12px;
+    }
+    .list {
+      border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: #0e1220;
+      height: 260px; display: flex; flex-direction: column;
+    }
+    .list .search { padding: 8px; border-bottom: 1px solid var(--border); }
+    .list .search input { width: 100%; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--border); background: #0b0f1a; color: var(--text); }
+    .list .items { overflow: auto; padding: 6px; }
+    .row-item {
+      display: flex; align-items: center; gap: 8px; padding: 6px 8px;
+      border-radius: 8px; border: 1px solid transparent;
+    }
+    .row-item:hover { background: #0a0f20; border-color: #0d1326; }
+    .row-item .sub { color: var(--muted); font-size: 12px; }
+    .pill { background: var(--badge); padding: 2px 8px; border-radius: 999px; font-size: 11px; color: #baccff; }
+    .hint { color: var(--muted); font-size: 12px; }
+    .bar { display: flex; align-items: center; gap: 8px; }
+    .bar .spacer { flex: 1; }
+    .hr { height: 1px; background: var(--border); margin: 8px 0; }
+    .danger { color: var(--danger); }
+    .success { color: var(--ok); }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .preview { background: #0b0f1a; border: 1px dashed var(--border); border-radius: 10px; padding: 8px; height: 120px; overflow: auto; white-space: pre; }
+    .small { font-size: 12px; color: var(--muted); }
+    @media (max-width: 980px) {
+      main { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>World DB Updater</h1>
+  </header>
+
+  <main>
+    <!-- LEFT: controls -->
+    <section class="card">
+      <h2>1) Load Catalog from GitHub</h2>
+      <div class="body grid">
+        <div class="row">
+          <div>
+            <label for="ref">Git ref (branch / tag / commit)</label>
+            <input id="ref" type="text" value="<%= defaultRef %>" placeholder="main or a commit SHA" />
+          </div>
+          <div style="align-self:flex-end; display:flex; gap:8px;">
+            <button id="btnLoad">Load Catalog</button>
+            <button id="btnCancelCat" disabled>Cancel</button>
+          </div>
+        </div>
+
+        <div class="bar">
+          <div class="small">Status: <span id="catStatus" class="muted">Idle</span></div>
+          <div class="spacer"></div>
+          <div class="small">Job: <span id="catJob" class="muted">—</span></div>
+        </div>
+        <div id="catLog" class="log" aria-live="polite"></div>
+
+        <div class="hr"></div>
+
+        <h2>2) Choose What To Update</h2>
+        <div class="grid">
+          <div class="split">
+            <div>
+              <label>Groups</label>
+              <div id="groups" class="list">
+                <div class="search"><input id="groupSearch" type="text" placeholder="Filter groups…" /></div>
+                <div id="groupItems" class="items"></div>
+              </div>
+              <div class="hint">Selecting a group adds all its tables to your selection (client-side convenience). You can still tweak in the Tables list.</div>
+            </div>
+
+            <div>
+              <label>Tables</label>
+              <div class="list">
+                <div class="search"><input id="tableSearch" type="text" placeholder="Filter tables…" /></div>
+                <div id="tableItems" class="items"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bar">
+            <label class="row" style="gap:6px; flex:1;">
+              <input id="selectAll" type="checkbox" />
+              <span>Select all</span>
+            </label>
+            <label class="row" style="gap:6px; flex:1;">
+              <input id="includeChars" type="checkbox" />
+              <span>Include character/guild/broker tables</span>
+            </label>
+            <div class="spacer"></div>
+            <label class="row" style="gap:6px;flex:0;">
+              <input id="truncate" type="checkbox" />
+              <span>TRUNCATE first</span>
+            </label>
+            <div style="width:180px;">
+              <label>Insert mode</label>
+              <select id="mode">
+                <option value="replace">REPLACE (default, overwrite duplicates)</option>
+                <option value="apply">INSERT</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label>Preview</label>
+            <div id="preview" class="preview">Nothing selected.</div>
+          </div>
+
+          <div class="bar">
+            <button id="btnStart" disabled>Start Update</button>
+            <button id="btnCancelJob" disabled>Cancel</button>
+            <div class="spacer"></div>
+            <div class="small">Status: <span id="jobStatus" class="muted">Idle</span></div>
+          </div>
+
+          <div id="jobLog" class="log" aria-live="polite"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT: summary -->
+    <section class="card">
+      <h2>Summary</h2>
+      <div class="body grid">
+        <div>
+          <div class="small">Tables in catalog:&nbsp;<span id="countAll" class="mono muted">0</span></div>
+        </div>
+        <div>
+          <label>Selected (<span id="countSel">0</span>)</label>
+          <div id="selectedChips" class="chips"></div>
+        </div>
+        <div>
+          <label>Notes</label>
+          <ul class="small">
+            <li>“Replace” turns <span class="mono">INSERT INTO</span> into <span class="mono">REPLACE INTO</span>.</li>
+            <li>“TRUNCATE first” issues <span class="mono">TRUNCATE TABLE</span> before applying data.</li>
+            <li>Character/guild/broker tables are excluded unless you tick the include box.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // ------- State -------
+    let catalogJobId = null;
+    let catSource = null;
+    let jobSource = null;
+    let currentCatalog = [];   // [{table, group, fileName}]
+    let grouped = {};          // { groupName: [{table, fileName}] }
+    let tableIndex = new Map();// table -> row
+
+    // ------- Helpers -------
+    const $ = (sel) => document.querySelector(sel);
+    const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+    function el(tag, cls, html) {
+      const n = document.createElement(tag);
+      if (cls) n.className = cls;
+      if (html != null) n.innerHTML = html;
+      return n;
+    }
+    function appendLog(container, line, cls) {
+      const row = el('div', cls ? cls : '');
+      row.textContent = line;
+      container.appendChild(row);
+      container.scrollTop = container.scrollHeight;
+    }
+    function appendLogRaw(container, html, cls) {
+      const row = el('div', cls ? cls : '');
+      row.innerHTML = html;
+      container.appendChild(row);
+      container.scrollTop = container.scrollHeight;
+    }
+    function parseFailEvent(e) {
+      try {
+        const o = JSON.parse(e.data);
+        const bits = [];
+        if (o.where) bits.push(`[${o.where}]`);
+        if (o.message) bits.push(o.message);
+        if (o.meta) {
+          const ctx = [];
+          if (o.meta.table) ctx.push(`table=${o.meta.table}`);
+          if (Number.isFinite(o.meta.stmtIndex)) ctx.push(`stmtIndex=${o.meta.stmtIndex}`);
+          if (o.meta.preview) ctx.push(`preview=${o.meta.preview}`);
+          if (ctx.length) bits.push(`(${ctx.join(' | ')})`);
+        }
+        if (o.code || o.errno || o.sqlState) {
+          bits.push([o.code && `code=${o.code}`, Number.isFinite(o.errno) && `errno=${o.errno}`, o.sqlState && `sqlState=${o.sqlState}`].filter(Boolean).join(' '));
+        }
+        return bits.filter(Boolean).join(' ');
+      } catch {
+        return e.data || 'Unknown error';
+      }
+    }
+    function byTextFilter(q) {
+      const s = q.trim().toLowerCase();
+      return (text) => !s || text.toLowerCase().includes(s);
+    }
+
+    // ------- Catalog UI -------
+    function clearCatalogUI() {
+      $('#groupItems').innerHTML = '';
+      $('#tableItems').innerHTML = '';
+      $('#selectedChips').innerHTML = '';
+      $('#preview').textContent = 'Nothing selected.';
+      $('#countSel').textContent = '0';
+      $('#countAll').textContent = '0';
+      tableIndex.clear();
+      grouped = {};
+      currentCatalog = [];
+    }
+
+    function renderGroups() {
+      const list = $('#groupItems'); list.innerHTML = '';
+      const f = byTextFilter($('#groupSearch').value);
+      Object.keys(grouped).sort().forEach(g => {
+        if (!f(g)) return;
+        const item = el('div', 'row-item');
+        const id = 'grp_' + g.replace(/\W+/g, '_');
+        item.appendChild(el('input')).setAttribute('type','checkbox');
+        item.firstChild.id = id;
+        item.firstChild.addEventListener('change', (ev) => {
+          // Toggle all tables in this group in the table list
+          const set = new Set(grouped[g].map(x => x.table));
+          $$('#tableItems input[type=checkbox]').forEach(cb => {
+            if (set.has(cb.dataset.table)) cb.checked = ev.target.checked;
+          });
+          updateSelectionPreview();
+        });
+        const box = el('div');
+        box.innerHTML = `<div>${g}</div><div class="sub">${grouped[g].length} tables</div>`;
+        item.appendChild(box);
+        list.appendChild(item);
+      });
+    }
+
+    function renderTables() {
+      const list = $('#tableItems'); list.innerHTML = '';
+      const f = byTextFilter($('#tableSearch').value);
+
+      currentCatalog.forEach(row => {
+        const t = row.table;
+        if (!f(t) && !f(row.group)) return;
+
+        const item = el('label', 'row-item');
+        const cb = el('input'); cb.type = 'checkbox'; cb.dataset.table = t;
+        cb.addEventListener('change', updateSelectionPreview);
+        const main = el('div');
+        main.innerHTML = `<div>${t} <span class="pill">${row.group}</span></div>
+                          <div class="sub">&larr; ${row.fileName}</div>`;
+        item.appendChild(cb);
+        item.appendChild(main);
+        list.appendChild(item);
+      });
+    }
+
+    function updateSelectionPreview() {
+      const selected = $$('#tableItems input[type=checkbox]:checked').map(x => x.dataset.table);
+      // chips
+      const chips = $('#selectedChips'); chips.innerHTML = '';
+      selected.slice(0, 40).forEach(t => chips.appendChild(el('span','chip', t)));
+      if (selected.length > 40) chips.appendChild(el('span','chip', `+${selected.length - 40} more`));
+      $('#countSel').textContent = String(selected.length);
+
+      // textual preview
+      if (!selected.length) {
+        $('#preview').textContent = 'Nothing selected.';
+      } else {
+        const lines = selected.map(t => {
+          const r = tableIndex.get(t);
+          return ` - ${t} [${r.group}] <- ${r.fileName}`;
+        });
+        $('#preview').textContent = 'Preview:\n' + lines.join('\n');
+      }
+    }
+
+    function hydrateCatalog(donePayload) {
+      // donePayload: { groups, catalog:[{table, group, fileName}], jobId, ref }
+      currentCatalog = donePayload.catalog || [];
+      grouped = donePayload.groups || {};
+      tableIndex.clear();
+      currentCatalog.forEach(r => tableIndex.set(r.table, r));
+
+      $('#countAll').textContent = String(currentCatalog.length);
+      renderGroups();
+      renderTables();
+      updateSelectionPreview();
+    }
+
+    // ------- Catalog flow -------
+    $('#btnLoad').addEventListener('click', async () => {
+      const ref = $('#ref').value.trim() || 'main';
+      clearCatalogUI();
+
+      $('#btnLoad').disabled = true;
+      $('#btnCancelCat').disabled = false;
+      $('#catStatus').textContent = 'Starting…';
+      $('#catLog').innerHTML = '';
+      appendLog($('#catLog'), `POST /world-update/catalog/start { ref: "${ref}" }`, 'muted');
+
+      try {
+        const r = await fetch('/world-update/catalog/start', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ref })
+        });
+        const j = await r.json();
+        if (!r.ok || !j.ok) throw new Error(j.error || 'Failed to start catalog');
+        catalogJobId = j.jobId;
+        $('#catJob').textContent = catalogJobId;
+        $('#catStatus').textContent = 'Running…';
+        // Stream
+        if (catSource) catSource.close();
+        catSource = new EventSource(`/world-update/catalog/stream/${catalogJobId}`);
+        catSource.addEventListener('progress', (e) => {
+          appendLog($('#catLog'), e.data);
+        });
+        catSource.addEventListener('done', (e) => {
+          const payload = JSON.parse(e.data);
+          appendLog($('#catLog'), 'Completed.', 'ok');
+          $('#catStatus').textContent = 'Done';
+          hydrateCatalog(payload);
+          $('#btnStart').disabled = false;
+          $('#btnLoad').disabled = false;
+          $('#btnCancelCat').disabled = true;
+          catSource.close();
+        });
+        catSource.addEventListener('fail', (e) => {
+          const msg = parseFailEvent(e);
+          appendLog($('#catLog'), 'ERROR: ' + msg, 'err');
+          $('#catStatus').textContent = 'Error';
+          $('#btnLoad').disabled = false;
+          $('#btnCancelCat').disabled = true;
+          catSource.close();
+        });
+      } catch (err) {
+        appendLog($('#catLog'), 'ERROR: ' + (err.message || String(err)), 'err');
+        $('#catStatus').textContent = 'Error';
+        $('#btnLoad').disabled = false;
+        $('#btnCancelCat').disabled = true;
+      }
+    });
+
+    $('#btnCancelCat').addEventListener('click', () => {
+      if (catSource) catSource.close();
+      $('#catStatus').textContent = 'Cancelled';
+      $('#btnLoad').disabled = false;
+      $('#btnCancelCat').disabled = true;
+    });
+
+    $('#groupSearch').addEventListener('input', renderGroups);
+    $('#tableSearch').addEventListener('input', renderTables);
+
+    $('#selectAll').addEventListener('change', (e) => {
+      const on = e.target.checked;
+      $$('#tableItems input[type=checkbox]').forEach(cb => cb.checked = on);
+      // also reflect groups visually
+      const set = new Set(currentCatalog.map(x => x.table));
+      $$('#groupItems input[type=checkbox]').forEach(cb => { cb.checked = on; });
+      updateSelectionPreview();
+    });
+
+    // ------- Update flow -------
+    $('#btnStart').addEventListener('click', async () => {
+      $('#jobLog').innerHTML = '';
+      $('#jobStatus').textContent = 'Starting…';
+      $('#btnStart').disabled = true;
+      $('#btnCancelJob').disabled = false;
+
+      const selectedTables = $$('#tableItems input[type=checkbox]:checked').map(x => x.dataset.table);
+      const selectedGroups = []; // using group UX as a convenience to tick tables; server also accepts real group names if needed
+      const payload = {
+        ref: $('#ref').value.trim() || 'main',
+        catalogJobId,
+        selectedTables,
+        selectedGroups,
+        includeChars: $('#includeChars').checked,
+        mode: $('#mode').value,
+        truncate: $('#truncate').checked,
+        selectAll: $('#selectAll').checked
+      };
+
+      appendLog($('#jobLog'), 'POST /world-update/start ' + JSON.stringify(payload), 'muted');
+
+      try {
+        const r = await fetch('/world-update/start', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const j = await r.json();
+        if (!r.ok || !j.ok) {
+          appendLog($('#jobLog'), 'ERROR: ' + (j.error || 'Failed to start update'), 'err');
+          $('#jobStatus').textContent = 'Error';
+          $('#btnStart').disabled = false;
+          $('#btnCancelJob').disabled = true;
+          return;
+        }
+
+        // Preview from server plan
+        const lines = (j.preview || []).map(p => ` - ${p.table} [${p.group}] <- ${p.file}`);
+        if (lines.length) {
+          appendLog($('#jobLog'), 'Preview:\n' + lines.join('\n'), 'muted');
+        }
+
+        // Start streaming
+        if (jobSource) jobSource.close();
+        jobSource = new EventSource(`/world-update/stream/${j.jobId}`);
+
+        jobSource.addEventListener('log', (e) => {
+          // Pretty-print JSON error lines that worldUpdater sends
+          try {
+            const obj = JSON.parse(e.data);
+            if (obj && obj.level === 'error') {
+              appendLog($('#jobLog'), 'ERROR: ' + (obj.message || ''), 'err');
+              if (obj.table) appendLog($('#jobLog'), '  table: ' + obj.table, 'err');
+              if (Number.isFinite(obj.stmtIndex)) appendLog($('#jobLog'), '  stmtIndex: ' + obj.stmtIndex, 'err');
+              if (obj.preview) appendLog($('#jobLog'), '  preview: ' + obj.preview, 'err');
+              if (obj.code || obj.errno || obj.sqlState) {
+                appendLog($('#jobLog'), `  mysql: code=${obj.code || ''} errno=${obj.errno ?? ''} sqlState=${obj.sqlState || ''}`, 'err');
+              }
+              return;
+            }
+          } catch {}
+          appendLog($('#jobLog'), e.data);
+        });
+
+        jobSource.addEventListener('done', (e) => {
+          const payload = JSON.parse(e.data);
+          appendLog($('#jobLog'), 'Completed. Updated ' + (payload.updated?.length || 0) + ' tables.  IT IS RECOMMENDED YOU STOP AND START THE WORLD SERVER TO REFLECT CHANGES.', 'ok');
+          $('#jobStatus').textContent = 'Done';
+          $('#btnStart').disabled = false;
+          $('#btnCancelJob').disabled = true;
+          jobSource.close();
+        });
+
+        jobSource.addEventListener('fail', (e) => {
+          const msg = parseFailEvent(e);
+          appendLog($('#jobLog'), 'ERROR: ' + msg, 'err');
+          $('#jobStatus').textContent = 'Error';
+          $('#btnStart').disabled = false;
+          $('#btnCancelJob').disabled = true;
+          jobSource.close();
+        });
+
+      } catch (err) {
+        appendLog($('#jobLog'), 'ERROR: ' + (err.message || String(err)), 'err');
+        $('#jobStatus').textContent = 'Error';
+        $('#btnStart').disabled = false;
+        $('#btnCancelJob').disabled = true;
+      }
+    });
+
+    $('#btnCancelJob').addEventListener('click', () => {
+      if (jobSource) jobSource.close();
+      $('#jobStatus').textContent = 'Cancelled';
+      $('#btnStart').disabled = false;
+      $('#btnCancelJob').disabled = true;
+    });
+
+  </script>
+</body>
+</html>

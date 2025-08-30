@@ -2,221 +2,303 @@
 <html>
 <head>
   <title>EQ2EMu Dawn Dashboard</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <link href="/css/style.css" rel="stylesheet" type="text/css">
+  <style>
+    /* Minimal additions to make the toolbar tidy without touching your main CSS */
+    .toolbar { display:flex; gap:.5rem; flex-wrap:wrap; align-items:center }
+    .toolbar .button.primary { font-weight:600 }
+    .toolbar .button.ghost { opacity:.9 }
+    details.menu { position:relative }
+    details.menu > .menu-list {
+      position:absolute; margin-top:.25rem; padding:.5rem;
+      border:1px solid #ccc; border-radius:.5rem; background:#fff;
+      display:flex; flex-direction:column; gap:.25rem; min-width:12rem; z-index:10;
+      box-shadow: 0 4px 12px rgba(0,0,0,.08);
+    }
+    details.menu[open] > .menu-list { display:flex }
+    /* Light table tidy-ups (assumes you have .button, .available/.unavailable already) */
+    table.status { width:100%; border-collapse:collapse; margin-top:1rem }
+    table.status th, table.status td { padding:.5rem .75rem; border-bottom:1px solid #e6e6e6; text-align:left }
+    table.status th { font-weight:600; white-space:nowrap }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace }
+    .dim { opacity:.7 }
+    .right { text-align:right }
+    .section-title { margin: 0.75rem 0 0.25rem; font-size: 1.1rem; font-weight: 700; }
+  </style>
 </head>
 <body>
 <div class="dashboard-container">
-<script>
-	function MakeCall(uri) {
-		fetch(uri)
-			.then(response => {
-			// no need
-			})
-			.catch(error => {
-				console.error('Error making call:', error);
-			});
-			fetchUpdates(); // get an update asap
-	}
-	function open_popup(target) {
-    window.open(target, 'eq2emu_popup', 'width=' + screen.width + ',height=' + screen.height + ',resizeable,scrollbars');
-	}
-	
-</script>
-  <h2>Welcome, <%= username %>!</h2>
-  <% server_status = "unavailable" %>
-  <% if (server_loaded == 1 && login_status === 'online' && world_status === 'online' && worldlogin_connected === 'connected') {
-	server_status = "available"
-  } %>
-  <% ls_status = "unavailable" %>
-  <% if (login_status === 'online') {
-	ls_status = "available"
-  } %>
-  <% ws_status = "unavailable" %>
-  <% if (world_status === 'online') {
-	ws_status = "available"
-  } %>
-  <h3 id="serverStatusHeader" class="<%= server_status %>"></h3>
-  <p>Your role: <%= role %></p>
-   <% if (role == 'admin') { %>
-	<table><tr>
-	<th><button id="register" class="button" onclick="open_popup('/register')">Create New User</button></th>
-	<th><button id="download_report" class="button" onclick="open_popup('/download_report')">Generate EQ2Emu Diag Report</button></th>
-	<th><a href="#" class="button" onclick="if(confirm('Are you sure you wish to force restart the dawn web server?') == true) MakeCall('/kill_server');">Kill/Restart Dawn Web Server</a></th>
-	<th><a href="#" class="button" onclick="if(confirm('Are you sure you wish to restart all services?') == true) MakeCall('/kill_and_compile');">Kill/Compile Login, World, Web Server</a></th>
-	<th><a href="#" class="button" onclick="if(confirm('Are you sure you wish to reset/update all content?  WARNING: THIS DELETES ALL SCRIPT FILE CHANGES MADE TO THE SERVER VIA THE DB EDITOR') == true) MakeCall('/update_content');">Update/Reset World Content</a></th>
-	</tr></table><br/>
-   <% } %>
-  <table>
-  <tr>
-        <th>Server Type</th>
+
+  <!-- Top status header -->
+  <% let server_status_cls = "unavailable"; %>
+  <% if (typeof server_status !== 'undefined' && (server_status === 'online' || server_status === 'available')) { server_status_cls = "available"; } %>
+  <h3 id="serverStatusHeader" class="<%= server_status_cls %>">
+    <span class="dim">Server:</span>
+    <%= (typeof server_status !== 'undefined') ? server_status : 'unknown' %>
+  </h3>
+  <p>Your role: <%= (typeof role !== 'undefined') ? role : 'guest' %></p>
+
+  <% if (role === 'admin') { %>
+  <!-- Admin quick actions -->
+  <div style="display:flex; gap:.5rem; flex-wrap:wrap; margin:.5rem 0 1rem">
+    <a href="#" class="button" onclick="open_popup('/register')">Create New User</a>
+    <a href="#" class="button" onclick="open_popup('/download_report')">Generate EQ2Emu Diag Report</a>
+    <a href="#" class="button" onclick="if(confirm('Are you sure you want to restart the Dawn web server?')) MakeCall('/kill_server');">Kill/Restart Dawn Web Server</a>
+    <a href="#" class="button" onclick="if(confirm('Kill + recompile Login, World, Web Server?')) MakeCall('/kill_and_compile');">Kill/Compile Login, World, Web</a>
+  </div>
+  <% } %>
+
+  <!-- LOGIN & WORLD STATUS TABLE -->
+  <table class="status" aria-label="Server status">
+    <thead>
+      <tr>
+        <th>Service</th>
         <th>Status</th>
-        <th>Uptime</th>
-        <th>World->Login Connected</th>
-        <th>Commands</th>
         <th>PID</th>
-  </tr>
-  <tr>
-  <td id="loginName">Login</td>
-  <td id="statusLogin" class="<%= ls_status %>"><%= login_status %></td>
-  <td id="statusLoginUptime">
-  <% if (login_uptime !== '') { %>
-	<%= login_uptime %>
-  <% } %>
-  </td>
-  <td>N/A</td>
-  <td>
-  <table border="0" cellspacing="0" cellpadding="0">
-	  <tr>
-		 <th><button id="view_login_log" class="button" onclick="open_popup('/view_login_log')">View Log</button></th>
-		 <th><button id="start_login" class="button" onclick="MakeCall('/start_login'); window.alert('Login Start Request Sent');">Start</button></th>
-		 <th><button id="stop_login" class="button" onclick="if(confirm('Are you sure you wish to force stop the login server?') == true) { MakeCall('/stop_login'); window.alert('Login Stop Request Sent'); }">Stop</button></th>
-	  </tr>
-  </table>
-  </td>
-  <td id="statusLoginPID"><%= login_pid %></td>
-  </tr>
-  
-  
-  <tr>
-  <td id="worldName">World</td>
-  <td id="statusWorld" class="<%= ws_status %>"><%= world_status %></td>
-  <td id="statusWorldUptime">
-  <% if (world_uptime !== '') { %>
-	<%= world_uptime %>
-  <% } %>
-  </td>
-  <% wl_status = "unavailable" %>
-  <% if (worldlogin_connected === 'connected') {
-	wl_status = "available"
-  } %>
-  <td id="statusWorldLoginConnected" class="<%= wl_status %>"><%= worldlogin_connected %></td>
-  <td>
-  <table border="0" cellspacing="0" cellpadding="0">
-	  <tr>
-		  <th><button id="view_world_log" class="button" onclick="open_popup('/view_world_log')">View Log</button></th>
-		  <th><button id="start_world" class="button" onclick="MakeCall('/start_world'); window.alert('World Start Request Sent')">Start</button></th>
-		  <th><button id="stop_world" class="button" onclick="if(confirm('Are you sure you wish to force stop the world server?') == true) { MakeCall('/stop_world'); window.alert('World Stop Request Sent'); }">Stop</button></th>
-		  <th><button id="list_clients" class="button" onclick="open_popup('/world_clients')">List Clients</button></th>
-		  <th><button id="view_rulesets" class="button" onclick="open_popup('/rulesets')">Rules</button></th>
-	  </tr>
-  </table>
-  </td>
-  <td id="statusWorldPID"><%= world_pid %></td>
-  </tr>
+        <th>Uptime</th>
+        <th>Connected</th>
+        <th class="right">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      <!-- LOGIN ROW -->
+      <tr>
+        <td id="loginName">
+          Login
+          <% if (typeof login_version !== 'undefined' && login_version && login_version.version) { %>
+            <span class="dim mono"><%= login_version.version %></span><br/>
+            <span class="dim mono"><%= login_version.compile_date %> v<%= login_version.compile_time %></span>
+          <% } %>
+        </td>
+
+        <% let ls_status_cls = "unavailable"; %>
+        <% if (typeof login_status !== 'undefined' && (login_status === 'online' || login_status === 'available')) { ls_status_cls = "available"; } %>
+        <td id="statusLogin" class="<%= ls_status_cls %>">
+          <%= (typeof login_status !== 'undefined') ? login_status : 'unknown' %>
+        </td>
+
+        <td id="statusLoginPID" class="mono">
+          <%= (typeof login_pid !== 'undefined' && login_pid > 0) ? login_pid : '-' %>
+        </td>
+
+        <td id="statusLoginUptime">
+          <%= (typeof login_uptime !== 'undefined' && login_uptime) ? login_uptime : '' %>
+        </td>
+
+        <% let ws_lc = "unavailable"; %>
+        <% if (typeof loginworld_connected !== 'undefined' && loginworld_connected === 'connected') { ws_lc = "available"; } %>
+        <td id="statusLoginWorldConnected" class="<%= ws_lc %>">
+          <%= (typeof loginworld_connected !== 'undefined') ? loginworld_connected : '-' %>
+        </td>
+
+        <td class="right">
+          <div class="toolbar">
+            <% if (role === 'admin') { %>
+              <button class="button" onclick="open_popup('/view_login_log')">View Log</button>
+              <% if (typeof login_pid !== 'undefined' && login_pid > 0) { %>
+                <a href="#" class="button" onclick="if(confirm('Stop Login server?')) { MakeCall('/stop_login'); alert('Login Stop Request Sent'); }">Stop</a>
+              <% } else { %>
+                <a href="#" class="button" onclick="MakeCall('/start_login'); alert('Login Start Request Sent');">Start</a>
+              <% } %>
+            <% } else { %>
+              <button class="button" disabled title="Admin only">View Log</button>
+            <% } %>
+          </div>
+        </td>
+      </tr>
+
+      <!-- WORLD ROW -->
+      <tr>
+        <td id="worldName">
+          World
+          <% if (typeof world_version !== 'undefined' && world_version && world_version.version) { %>
+            <span class="dim mono"><%= world_version.version %></span><br/>
+            <span class="dim mono"><%= world_version.compile_date %> v<%= world_version.compile_time %></span>
+          <% } %>
+        </td>
+
+        <% let ws_status_cls = "unavailable"; %>
+        <% if (typeof world_status !== 'undefined' && (world_status === 'online' || world_status === 'available')) { ws_status_cls = "available"; } %>
+        <td id="statusWorld" class="<%= ws_status_cls %>">
+          <%= (typeof world_status !== 'undefined') ? world_status : 'unknown' %>
+        </td>
+
+        <td id="statusWorldPID" class="mono">
+          <%= (typeof world_pid !== 'undefined' && world_pid > 0) ? world_pid : '-' %>
+        </td>
+
+        <td id="statusWorldUptime">
+          <%= (typeof world_uptime !== 'undefined' && world_uptime) ? world_uptime : '' %>
+        </td>
+
+        <% let wl_status = "unavailable"; %>
+        <% if (typeof worldlogin_connected !== 'undefined' && worldlogin_connected === 'connected') { wl_status = "available"; } %>
+        <td id="statusWorldLoginConnected" class="<%= wl_status %>">
+          <%= (typeof worldlogin_connected !== 'undefined') ? worldlogin_connected : '-' %>
+        </td>
+
+        <td class="right">
+          <!-- NEW: Compact toolbar for World actions -->
+          <nav class="toolbar" role="toolbar" aria-label="World actions">
+            <% const worldRunning = (typeof world_pid !== 'undefined' && world_pid > 0); %>
+            <% if (role === 'admin') { %>
+              <button id="view_world_log" class="button" onclick="open_popup('/view_world_log')">
+                View Log
+              </button>
+              <button id="world_toggle"
+                      class="button primary"
+                      data-running="<%= worldRunning ? '1' : '0' %>"
+                      onclick="toggleWorld()">
+                <span id="world_toggle_label"><%= worldRunning ? 'Stop World' : 'Start World' %></span>
+              </button>
+              <details class="menu">
+                <summary class="button">More ▾</summary>
+                <div class="menu-list">
+                  <button id="list_clients" class="button" <%= worldRunning ? '' : 'disabled' %> onclick="open_popup('/world_clients')">Clients</button>
+                  <button id="view_rulesets" class="button ghost" onclick="open_popup('/rulesets')">Rules</button>
+                  <button id="view_worldupdates" class="button ghost" onclick="open_popup('/world-update')">Update Database</button>
+                  <button id="reset_worldcontent" class="button ghost" onclick="if(confirm('Reset scripts/content back to HEAD? THIS DELETES LOCAL CHANGES.')) MakeCall('/reset_content');">Reset Content (LUA Scripts)</button>
+                </div>
+              </details>
+            <% } else { %>
+              <!-- Non-admins can peek logs; gate others -->
+              <button class="button" onclick="open_popup('/view_world_log')">View Log</button>
+              <button class="button" disabled title="Admin only">Clients</button>
+              <button class="button" disabled title="Admin only">More</button>
+            <% } %>
+          </nav>
+        </td>
+      </tr>
+
+    </tbody>
   </table>
 
-  <a href="/">Logout</a>
-  
-  
-    <script>
-        // Function to fetch updates from the server
-        async function fetchUpdates() {
-            try {
-                const response = await fetch('/dashboard_update');
-                const data = await response.json();
-                
-                // Update the DOM with the fetched data
-				var message = "Unknown Status";
-				if(data.server_loaded == -1) {
-					window.location.href = window.location.protocol + "//" + window.location.host + "/";
-				}
-				else if(data.server_update_content == 1) {
-					message = "Content is updating, please wait!";
-				}
-				else if(data.server_loaded == 0) {
-						if(data.server_recompile == 1) {
-							message = "Server is recompiling login and world, please wait!";
-						}
-						else {
-							message = "Server is starting up, please wait!";
-						}
-				   } else if(data.ls_status === 'unavailable' || data.ws_status === 'unavailable') {
-						message = "Database and configuration loaded, login and/or world not yet online";
-				} else if(data.worldlogin_connected !== 'connected') {
-						message = "World is not connected to login server!";
-				} else {
-						message = "Server Running!";
-				}
-				
-				server_status = "unavailable";
-				if (data.server_loaded == 1 && data.login_status === 'online' && data.world_status === 'online' && data.worldlogin_connected === 'connected') {
-					server_status = "available"
-				}
-				ls_status = "unavailable"
-				if (data.login_status === 'online') {
-					ls_status = "available"
-				}
-				ws_status = "unavailable"
-				if (data.world_status === 'online') {
-					ws_status = "available"
-				}
-				wl_status = "unavailable"
-				if (data.worldlogin_connected === 'connected') {
-					wl_status = "available"
-				}
-				
-				
-				if (data.role == 'admin') {
-						document.getElementById("view_login_log").disabled = false;
-						document.getElementById("view_world_log").disabled = false;
-					if(data.login_pid > 0) {
-						document.getElementById("start_login").disabled = true;
-						document.getElementById("stop_login").disabled = false;
-					}
-					else {
-						document.getElementById("start_login").disabled = false;
-						document.getElementById("stop_login").disabled = true;
-					}
-					
-					if(data.world_pid > 0) {
-						document.getElementById("start_world").disabled = true;
-						document.getElementById("stop_world").disabled = false;
-						document.getElementById("list_clients").disabled = false;
-					}
-					else {
-						document.getElementById("start_world").disabled = false;
-						document.getElementById("stop_world").disabled = true;
-						document.getElementById("list_clients").disabled = true;
-					}
-				}
-				else {
-						document.getElementById("start_login").disabled = true;
-						document.getElementById("stop_login").disabled = true;
-						document.getElementById("start_world").disabled = true;
-						document.getElementById("stop_world").disabled = true;
-						document.getElementById("list_clients").disabled = true;
-						document.getElementById("view_login_log").disabled = true;
-						document.getElementById("view_world_log").disabled = true;
-				}
-                document.getElementById('serverStatusHeader').innerText = message;
-                document.getElementById('serverStatusHeader').className = server_status;
-				document.getElementById('statusWorldPID').innerText = data.world_pid;
-				document.getElementById('statusWorld').innerText = data.world_status;
-				document.getElementById('statusWorld').className = ws_status;
-				document.getElementById('statusWorldUptime').innerText = data.world_uptime;
-				document.getElementById('statusWorldLoginConnected').innerText = data.worldlogin_connected;
-				document.getElementById('statusWorldLoginConnected').className = wl_status;
-				if(data.world_version !== null) {
-					document.getElementById('worldName').innerText = "World " + data.world_version.version + String.fromCharCode(13) + data.world_version.compile_date + " " + data.world_version.compile_time;
-				}
-				
-				document.getElementById('statusLoginPID').innerText = data.login_pid;
-				document.getElementById('statusLogin').innerText = data.login_status;
-				document.getElementById('statusLogin').className = ls_status;
-				document.getElementById('statusLoginUptime').innerText = data.login_uptime;
-				if(data.login_version !== null) {
-					document.getElementById('loginName').innerText = "Login " + data.login_version.version + String.fromCharCode(13) + data.login_version.compile_date + " " + data.login_version.compile_time;
-				}
-            } catch (error) {
-                console.error('Error fetching updates:', error);
-            }
+  <div style="margin-top:1rem">
+    <a href="/">Logout</a>
+  </div>
+
+  <script>
+    function MakeCall(uri) {
+      fetch(uri).catch(() => {});
+    }
+
+    function open_popup(url) {
+      window.open(url, '_blank', 'width=1200,height=900,scrollbars=yes');
+    }
+
+    function toggleWorld() {
+      const btn   = document.getElementById('world_toggle');
+      const label = document.getElementById('world_toggle_label');
+      const running = btn?.dataset?.running === '1';
+
+      if (running) {
+        if (!confirm('Are you sure you wish to stop the world server?')) return;
+        btn.disabled = true; label.textContent = 'Stopping...';
+        MakeCall('/stop_world');
+        alert('World Stop Request Sent');
+      } else {
+        btn.disabled = true; label.textContent = 'Starting...';
+        MakeCall('/start_world');
+        alert('World Start Request Sent');
+      }
+      // Re-enable after a short delay; your poller will set final state
+      setTimeout(() => { btn.disabled = false; }, 1500);
+    }
+
+    // Optional: live polling hook. If you already have a fetchUpdates(), keep it.
+    // This one only updates the world toolbar bits; it won’t interfere with your other logic.
+    async function fetchWorldBits() {
+      try {
+        const res = await fetch('/dashboard_update', { cache:'no-store' });
+        const data = await res.json();
+
+        // Update Start/Stop toggle
+        const toggleBtn = document.getElementById('world_toggle');
+        const toggleLbl = document.getElementById('world_toggle_label');
+        if (toggleBtn && toggleLbl && data) {
+          const running = !!(data.world_pid > 0);
+          toggleBtn.dataset.running = running ? '1' : '0';
+          toggleLbl.textContent = running ? 'Stop World' : 'Start World';
+          const listBtn = document.getElementById('list_clients');
+          if (listBtn) listBtn.disabled = !running;
         }
-		
-		fetchUpdates();
-        // Polling function to fetch updates every 5 seconds
-        setInterval(fetchUpdates, 5000);
-    </script>
+
+        // Basic status cells if present
+        if (typeof data.world_status !== 'undefined') {
+          const st = document.getElementById('statusWorld');
+          if (st) {
+            st.textContent = data.world_status;
+            st.classList.remove('available','unavailable');
+            st.classList.add((data.world_status === 'online' || data.world_status === 'available') ? 'available' : 'unavailable');
+          }
+        }
+        if (typeof data.world_pid !== 'undefined') {
+          const pid = document.getElementById('statusWorldPID');
+          if (pid) pid.textContent = data.world_pid > 0 ? data.world_pid : '-';
+        }
+        if (typeof data.world_uptime !== 'undefined') {
+          const up = document.getElementById('statusWorldUptime');
+          if (up) up.textContent = data.world_uptime || '';
+        }
+        if (typeof data.worldlogin_connected !== 'undefined') {
+          const c = document.getElementById('statusWorldLoginConnected');
+          if (c) {
+            c.textContent = data.worldlogin_connected;
+            c.classList.remove('available','unavailable');
+            c.classList.add(data.worldlogin_connected === 'connected' ? 'available' : 'unavailable');
+          }
+        }
+
+        // Login basics (no UI changes here, just keep fresh if values exist)
+        if (typeof data.login_status !== 'undefined') {
+          const st = document.getElementById('statusLogin');
+          if (st) {
+            st.textContent = data.login_status;
+            st.classList.remove('available','unavailable');
+            st.classList.add((data.login_status === 'online' || data.login_status === 'available') ? 'available' : 'unavailable');
+          }
+        }
+        if (typeof data.login_pid !== 'undefined') {
+          const pid = document.getElementById('statusLoginPID');
+          if (pid) pid.textContent = data.login_pid > 0 ? data.login_pid : '-';
+        }
+        if (typeof data.login_uptime !== 'undefined') {
+          const up = document.getElementById('statusLoginUptime');
+          if (up) up.textContent = data.login_uptime || '';
+        }
+        if (typeof data.loginworld_connected !== 'undefined') {
+          const c = document.getElementById('statusLoginWorldConnected');
+          if (c) {
+            c.textContent = data.loginworld_connected;
+            c.classList.remove('available','unavailable');
+            c.classList.add(data.loginworld_connected === 'connected' ? 'available' : 'unavailable');
+          }
+        }
+
+        // Header
+        if (typeof data.server_loaded !== 'undefined') {
+          const h = document.getElementById('serverStatusHeader');
+          if (h) {
+            server_status = (data.server_loaded == 1 && data.login_status === 'online' && data.world_status === 'online' && data.worldlogin_connected === 'connected') ? 'available' : 'unavailable';
+            h.textContent = 'Server: ' + server_status;
+            h.classList.remove('available','unavailable');
+            h.classList.add(server_status);
+          }
+        }
+      } catch (e) {
+        console.error('fetchWorldBits error', e);
+      }
+    }
+
+    // Kick off polling every 5s (align with your existing cadence)
+    fetchWorldBits();
+    setInterval(fetchWorldBits, 5000);
+  </script>
+
 </div>
 </body>
 </html>

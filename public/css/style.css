@@ -117,4 +117,17 @@ input, select, textarea {
 		background-color: #ffc7ce;
 		color: #9c0006;
 	}
+	
+	.toolbar { display:flex; gap:.5rem; flex-wrap:wrap; align-items:center }
+	.button.primary { font-weight:600 }
+	.button.ghost { opacity:.85 }
+	.menu { position:relative }
+	.menu > .menu-list {
+	  position:absolute; margin-top:.25rem; padding:.5rem;
+	  border:1px solid #ccc; border-radius:.5rem; background:#fff;
+	  display:flex; flex-direction:column; gap:.25rem; min-width:12rem;
+	  z-index:10;
+	}
+	.menu[open] > .menu-list { display:flex }
+	
 </style>
