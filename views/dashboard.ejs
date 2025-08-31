@@ -284,7 +284,11 @@
           const h = document.getElementById('serverStatusHeader');
           if (h) {
             server_status = (data.server_loaded == 1 && data.login_status === 'online' && data.world_status === 'online' && data.worldlogin_connected === 'connected') ? 'available' : 'unavailable';
-            h.textContent = 'Server: ' + server_status;
+            is_recompiling = ''
+            if(data.server_recompile == 1) {
+                is_recompiling = "Recompiling ... "
+            }
+            h.textContent = 'Server: ' + is_recompiling + server_status;
             h.classList.remove('available','unavailable');
             h.classList.add(server_status);
           }
